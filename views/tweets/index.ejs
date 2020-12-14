@@ -1,0 +1,45 @@
+<% layout("layouts/boilerplate") %>
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-8 col-lg-6">
+            <h4 class="card card-header">Inicio</h4>
+            <% for(let tweet of tweets) { %>
+                <div class="card">
+                    <div class="row">
+                        <div class="col-2">
+                            <img class="rounded-circle text-center p-0 m-1" src="<%= tweet.image %>" width="60 px"
+                                height="60 px">
+                        </div>
+                        <div class="col-10">
+                            <div class="card-body">
+                                <div class="d-flex pt-2">
+                                    <p><b>antena 3</b></p>
+                                    <span>@antena3com - 8 min</span>
+                                    <a href="/tweets/<%= tweet._id %> " class="btn btn-outline-success btn-sm ml-auto"
+                                        role="button" style="height: 100%;">More</a>
+                                </div>
+                                <p class="card-text">
+                                    <%= tweet.description %> Lorem ipsum, dolor sit amet consectetur
+                                        adipisicing
+                                        elit. Modi quod dolorem nostrum officia temporibus quos qui porro totam ipsa
+                                        tenetur cum
+                                        sequi,
+                                        magni ullam atque doloremque eligendi itaque? Quam, optio!
+                                </p>
+                                <img src="<%= tweet.image %>" class="img-fluid img-thumbnail">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="row text-center">
+                            <div class="col"><i class="far fa-comment"></i> 9</div>
+                            <div class="col"><i class="fas fa-retweet"></i> 25</div>
+                            <div class="col"><i class="fas fa-heart"></i> 5.380</div>
+                            <div class="col"><i class="fas fa-share-alt"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+        </div>
+        <div class="col-lg-2"></div>
+    </div>
