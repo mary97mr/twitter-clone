@@ -7,12 +7,50 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav m-auto">
-                <a class="nav-link pl-5" href="/">Home</a>
-                <a class="nav-link pl-5" href="/tweets">Tweets</a>
-                <a class="nav-link pl-5" href="">Notificationes</a>
-                <a class="nav-link pl-5" href="">Perfil</a>
-                <a class="nav-link pl-5" href="/tweets/new">Twittear</a>
+                <a class="nav-link ps-5" href="/">Home</a>
+                <a class="nav-link ps-5" href="/tweets">Tweets</a>
+                <a class="nav-link ps-5" href="">Notificationes</a>
+                <a class="nav-link ps-5" href="">Perfil</a>
+                <!-- Button trigger twitter modal -->
+                <a class="nav-link ps-5" type="button" data-bs-toggle="modal" data-bs-target="#tweetModal">Twittear</a>
             </div>
         </div>
     </div>
 </nav>
+
+<!-- Twitter Modal -->
+<div class="modal fade" id="tweetModal" tabindex="-1" aria-labelledby="tweetModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/tweets" method="POST" novalidate class="validated-form">
+                    <div class="mb-3">
+                        <label class="form-label" for="description">Share what's in your mind</label>
+                        <textarea class="form-control" name="tweet[description]" id="description" cols="30" rows="4"
+                            placeholder="What's happening?" required></textarea>
+                        <div class="valid-feedback">Looks good!</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="location">Where are you?</label>
+                        <input class="form-control" type="text" name="tweet[location]" id="location"
+                            placeholder="location" required>
+                        <div class="valid-feedback">Looks good!</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="image">Add an image to your tweet</label>
+                        <input class="form-control" type="text" name="tweet[image]" id="image" placeholder="image"
+                            required>
+                        <div class="valid-feedback">Looks good!</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger btn-sm" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-sm btn-outline-primary ms-auto rounded-pill">tweet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

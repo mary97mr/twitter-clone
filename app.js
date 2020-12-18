@@ -77,7 +77,6 @@ app.post("/tweets", validateTweet, catchAsync(async (req, res, next) => {
 // SHOW ROUTE
 app.get("/tweets/:id", catchAsync(async (req, res) => {
     const tweet = await Tweet.findById(req.params.id).populate("comments");
-    console.log(tweet)
     res.render("tweets/show", { tweet });
 }));
 
@@ -101,7 +100,7 @@ app.delete("/tweets/:id", catchAsync(async (req, res) => {
 
 // ------- Comments Routes------//
 
-// Create Route 
+// Create Comment Route 
 app.post("/tweets/:id/comments", validateComment, catchAsync(async (req, res) => {
     const tweet = await Tweet.findById(req.params.id);
     const newComment = new Comment(req.body.comment);
@@ -109,6 +108,20 @@ app.post("/tweets/:id/comments", validateComment, catchAsync(async (req, res) =>
     await newComment.save();
     await tweet.save();
     res.redirect(`/tweets/${tweet._id}`)
+}));
+
+// Update Comment Route 
+app.put("/tweets/:id/comments/:comment_id",validateComment, catchAsync(async (req, res) => {
+    await Comment.findByIdAndUpdate(req.params.comment_id, req.body.comment);
+    res.redirect(`/tweets/${req.params.id}`);
+}));
+
+// Delete Comment Route 
+app.delete("/tweets/:id/comments/:comment_id", catchAsync(async (req, res) => {
+    const { id, comment_id } = req.params;
+    await Tweet.findByIdAndUpdate(id, { $pull: { comments: comment_id } });
+    await Comment.findByIdAndDelete(comment_id)
+    res.redirect(`/tweets/${id}`)
 }));
 
 // Basic error handling

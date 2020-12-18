@@ -1,122 +1,148 @@
 <% layout("layouts/boilerplate") %>
-    <div class="row">
-        <div class="col-md-4"></div>
-        <div class="col-md-8 col-lg-6">
-            <div class="card mb-3">
-                <div class="card-header">
-                    <a class="my-auto" href="/tweets"><i class="fas fa-arrow-left mr-3"></i></a>
-                    Twittear
-                </div>
-                <div class="row mt-2">
-                    <div class="col-10 offset-1 d-flex">
-                        <img class="rounded-circle text-center p-0 m-1" src="<%= tweet.image %>" width="60 px"
-                            height="60 px">
-                        <div class="my-auto ml-3">
-                            <h5 class="card-title m-0"><b> antena 3</b></h5>
-                            <span>@antena3com</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-10 offset-1">
-                        <p class="card-text">
-                            <%= tweet.description %> Lorem ipsum, dolor sit amet consectetur
-                                adipisicing
-                                elit. Modi quod dolorem nostrum officia temporibus quos qui porro totam ipsa tenetur cum
-                                sequi,
-                                magni ullam atque doloremque eligendi itaque? Quam, optio!
-                        </p>
-                        <img src="<%= tweet.image %>" class="img-fluid img-thumbnail p-1 mb-2">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item">
-                                <%= tweet.location %>
-                            </li>
-                            <li class="list-group-item text-muted">9:42 a. m. · 2 dic. 2020</li>
-                        </ul>
-                        <div class="card-body d-flex mb-0">
-                            <a class="btn btn-sm btn-warning my-auto mr-2" href="/tweets/<%= tweet._id %>/edit">EDIT</a>
-                            <form action="/tweets/<%= tweet._id %>?_method=DELETE" method="POST">
-                                <button type="submit" class="btn btn-sm btn-danger">DELETE</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <div class="row text-center">
-                        <div class="col"><i class="far fa-comment"></i> 9</div>
-                        <div class="col"><i class="fas fa-retweet"></i> 25</div>
-                        <div class="col"><i class="fas fa-heart"></i> 5.380</div>
-                        <div class="col"><i class="fas fa-share-alt"></i></div>
+<div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-8 col-lg-6">
+        <div class="card mb-3">
+            <div class="card-header">
+                <a class="my-auto" href="/tweets"><i class="fas fa-arrow-left ms-3"></i></a>
+                Twittear
+            </div>
+            <div class="row mt-2">
+                <div class="col-10 offset-1 d-flex">
+                    <img class="rounded-circle text-center p-0 m-1" src="<%= tweet.image %>" width="60 px"
+                        height="60 px">
+                    <div class="my-auto ms-3">
+                        <h5 class="card-title m-0"><b> antena 3</b></h5>
+                        <span>@antena3com</span>
                     </div>
                 </div>
             </div>
-            <!--Comment section-->
-            <div class="card" style="border-left: 4px solid green;">
-                <div class="my-3">
-                    <div class="d-flex justify-content-between mr-2">
-                        <h5 class="card-title ml-3">Comments <i class="fas fa-comment"></i></h5>
-                        <!-- Comment button that is used for collapsing-->
-                        <button class="btn btn-primary btn-sm " type="button" data-bs-toggle="collapse"
-                            data-bs-target="#collapseComment" aria-expanded="false" aria-controls="collapseExample">
-                            Comment
-                        </button>
-                    </div>
-                    <!--Collapse Add a comment form START-->
-                    <div class="collapse mt-3" id="collapseComment">
-                        <div class="card card-body col-10 offset-1">
-                            <p class="card-title">Write your comment. <i class="fas fa-pen"></i></p>
-                            <form id="add-comment-form" action="/tweets/<%= tweet._id %>/comments" method="POST"
-                                class="validated-form" novalidate>
-                                <div class="mb-3">
-                                    <input class="form-control" type="text" disabled value="mary97mr">
-                                </div>
-                                <div class="mb-3">
-                                    <textarea class="form-control" placeholder="Tweetea tu respuesta" cols="70" rows="5"
-                                        form="add-comment-form" name="comment[body]" required></textarea>
-                                    <div class="valid-feedback">Looks Good</div>
-                                </div>
-                                <div class="text-right">
-                                    <button type="submit" class="btn btn-success btn-sm">Post</button>
-                                </div>
-                            </form>
-                        </div>
+            <div class="row">
+                <div class="col-10 offset-1">
+                    <p class="card-text">
+                        <%= tweet.description %> Lorem ipsum, dolor sit amet consectetur
+                            adipisicing
+                            elit. Modi quod dolorem nostrum officia temporibus quos qui porro totam ipsa tenetur cum
+                            sequi,
+                            magni ullam atque doloremque eligendi itaque? Quam, optio!
+                    </p>
+                    <img src="<%= tweet.image %>" class="img-fluid img-thumbnail p-1 mb-2">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <%= tweet.location %>
+                        </li>
+                        <li class="list-group-item text-muted">9:42 a. m. · 2 dic. 2020</li>
+                    </ul>
+                    <div class="card-body d-flex mb-0">
+                        <a class="btn btn-sm btn-warning my-auto me-2" href="/tweets/<%= tweet._id %>/edit">EDIT</a>
+                        <form action="/tweets/<%= tweet._id %>?_method=DELETE" method="POST">
+                            <button type="submit" class="btn btn-sm btn-danger">DELETE</button>
+                        </form>
                     </div>
                 </div>
             </div>
-            <div class="card">
+            <div class="card-footer">
+                <div class="row text-center">
+                    <div class="col"><i class="far fa-comment"></i> 9</div>
+                    <div class="col"><i class="fas fa-retweet"></i> 25</div>
+                    <div class="col"><i class="fas fa-heart"></i> 5.380</div>
+                    <div class="col"><i class="fas fa-share-alt"></i></div>
+                </div>
+            </div>
+        </div>
+        <!--Comment section-->
+        <div class="card" style="border-left: 4px solid green;">
+            <div class="d-flex justify-content-between my-3">
+                <h5 class="card-title ps-3">Comments <i class="fas fa-comment"></i></h5>
+                <!-- Comment button that is used for collapsing-->
+                <button class="btn btn-primary btn-sm me-2" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseComment" aria-expanded="false" aria-controls="collapseComment">
+                    Comment
+                </button>
+            </div>
+            <!--Collapse Add a comment form -->
+            <div class="collapse my-3" id="collapseComment">
+                <div class="card card-body col-10 offset-1">
+                    <p class="card-title">Write your comment. <i class="fas fa-pen"></i></p>
+                    <form id="add-comment-form" action="/tweets/<%= tweet._id %>/comments" method="POST"
+                        class="validated-form" novalidate>
+                        <div class="mb-3">
+                            <input class="form-control" type="text" disabled value="mary97mr">
+                        </div>
+                        <div class="mb-3">
+                            <textarea class="form-control" placeholder="Tweetea tu respuesta" cols="70" rows="5" form="add-comment-form" name="comment[body]" required></textarea>
+                            <div class="valid-feedback">Looks Good</div>
+                        </div>
+                        <button type="submit" class="btn btn-success btn-sm">Post</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="card mb-3">
+        <!--Display comments by looping through them-->
+        <% for(let comment of tweet.comments) { %>
+            <div class="card-body">
                 <div class="row">
                     <div class="col-2">
-                        <img class="rounded-circle mr-auto p-0 m-1" src="<%= tweet.image %>" width="60 px"
-                            height="60 px">
+                        <img class="rounded-circle me-auto p-0 m-1" src="<%= tweet.image %>" width="60 px" height="60 px">
                     </div>
                     <div class="col-10">
-                        <div class="my-auto ml-1 d-flex">
+                        <div class="my-auto ms-1 d-flex">
                             <p class="card-title m-0">
                                 <b> antena 3</b>
                                 <span class="text-muted m-0">@mary97mr · </span>
-                                <span class="text-muted m-0">1h</span>
+                                <span class="text-muted m-0">
+                                    <%= moment(comment.createdAt).fromNow() %>
+                                </span>
                             </p>
-
+                            <div class="dropdown me-1 m-auto">
+                                <button type="button" class="btn btn-light " id="dropdownMenuOffset" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuOffset">
+                                    <!-- Delete comment button-->
+                                    <li>
+                                        <form action="/tweets/<%=tweet._id%>/comments/<%=comment._id%>?_method=DELETE" method="POST">
+                                            <button class="dropdown-item" type="submit">Delete</button>
+                                        </form>
+                                    </li>
+                                    <!--Update comment button that is used for collapsing-->
+                                    <li>
+                                        <a class="dropdown-item" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEdit<%= comment._id %>" aria-expanded="false" aria-controls="collapseEdit<%= comment._id %>">Update</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div>
+                            <p> <%= comment.body %> </p>
+                        </div>
+                        <!--Collapse Edit a comment form -->
+                        <div class="collapse my-3" id="collapseEdit<%= comment._id %>">
+                            <div class="card card-body" style="border-left: 4px solid orange;">
+                                <p class="card-title">Edit your comment. <i class="fas fa-pen"></i></p>
+                                <form id="edit-comment-form" action="/tweets/<%= tweet._id %>/comments/<%= comment._id %>?_method=PUT" method="POST"
+                                    class="validated-form" novalidate>
+                                    <div class="mb-3">
+                                        <input class="form-control" type="text" disabled value="mary97mr">
+                                    </div>
+                                    <div class="mb-3">
+                                        <textarea class="form-control"  cols="70" rows="5" form="edit-comment-form" name="comment[body]" required><%= comment.body %></textarea>
+                                        <div class="valid-feedback">Looks Good</div>
+                                    </div>
+                                    <button type="submit" class="btn btn-warning btn-sm">Post</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="row text-center">
+                            <div class="col"><i class="far fa-comment"></i> 9</div>
+                            <div class="col"><i class="fas fa-retweet"></i> 25</div>
+                            <div class="col"><i class="fas fa-heart"></i> 5.380</div>
+                            <div class="col"><i class="fas fa-share-alt"></i></div>
                         </div>
                     </div>
                 </div>
-                <!--Display comments by looping through them-->
-                <% for(let comment of tweet.comments) { %>
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <span>mary97mr</span>
-                            <span>
-                                <%= moment(comment.createdAt).fromNow() %>
-                            </span>
-                        </div>
-                        <p>
-                            <%= comment.body %>
-                        </p>
-                    </div>
-                    <hr class="my-0">
-                    <% } %>
             </div>
-        </div>
-        <!-- Comment section END -->
-        <div class="col-lg-2"></div>
+            <hr class="my-0">
+        <% } %>
+    <!-- Comment section END -->
     </div>
+    <div class="col-lg-2"></div>
+</div>
