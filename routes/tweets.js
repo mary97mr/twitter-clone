@@ -32,30 +32,41 @@ router.get("/new", (req, res) => {
 router.post("/", validateTweet, catchAsync(async (req, res, next) => {
     const tweetCreated = new Tweet(req.body.tweet);
     await tweetCreated.save();
+    req.flash("success", "Successfully created a new post");
     res.redirect(`/tweets/${tweetCreated._id}`)
 }));
 
 // SHOW ROUTE
 router.get("/:id", catchAsync(async (req, res) => {
     const tweet = await Tweet.findById(req.params.id).populate("comments");
+    if(!tweet) {
+        req.flash("error", "Cannot find that post");
+        res.redirect("/tweets");
+    }
     res.render("tweets/show", { tweet });
 }));
 
 // EDIT ROUTE
 router.get("/:id/edit", catchAsync(async (req, res) => {
     const tweet = await Tweet.findById(req.params.id);
+    if(!tweet) {
+        req.flash("error", "Cannot find that post");
+        res.redirect("/tweets");
+    }
     res.render("tweets/edit", { tweet });
 }));
 
 // UPDATE ROUTE
 router.put("/:id", validateTweet, catchAsync(async (req, res) => {
-    const updatedTweet = await Tweet.findByIdAndUpdate(req.params.id, req.body.tweet)
+    const updatedTweet = await Tweet.findByIdAndUpdate(req.params.id, req.body.tweet);
+    req.flash("success", "Successfully updated your post");
     res.redirect(`/tweets/${updatedTweet._id}`)
 }));
 
 // DELETE ROUTE
 router.delete("/:id", catchAsync(async (req, res) => {
-    await Tweet.findByIdAndDelete(req.params.id)
+    await Tweet.findByIdAndDelete(req.params.id);
+    req.flash("success", "Successfully deleted your post");
     res.redirect("/tweets")
 }));
 
