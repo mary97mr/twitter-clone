@@ -7,6 +7,8 @@ const tweetSchema = new Schema({
     image: String,
     description: String,
     location: String,
+    createdAt: { type: Date},
+    author: {type: Schema.Types.ObjectId, ref: "User"},
     comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }]
 });
 

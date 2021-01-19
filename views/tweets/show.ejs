@@ -12,8 +12,8 @@
                     <img class="rounded-circle text-center p-0 m-1" src="<%= tweet.image %>" width="60 px"
                         height="60 px">
                     <div class="my-auto ms-3">
-                        <h5 class="card-title m-0"><b> antena 3</b></h5>
-                        <span>@antena3com</span>
+                        <h5 class="card-title m-0"><b><%= tweet.author.name %></b></h5>
+                        <span>@<%= tweet.author.username %></span>
                     </div>
                 </div>
             </div>
@@ -27,18 +27,20 @@
                             magni ullam atque doloremque eligendi itaque? Quam, optio!
                     </p>
                     <img src="<%= tweet.image %>" class="img-fluid img-thumbnail p-1 mb-2">
-                    <ul class="list-group list-group-flush">
+                    <ul class="list-group list-group-flush mb-2">
                         <li class="list-group-item">
                             <%= tweet.location %>
                         </li>
-                        <li class="list-group-item text-muted">9:42 a. m. · 2 dic. 2020</li>
+                        <li class="list-group-item text-muted"><%= moment(tweet.createdAt).format("lll")%> </li>
                     </ul>
-                    <div class="card-body d-flex mb-0">
+                    <% if(currentUser && tweet.author.equals(currentUser._id)) { %> 
+                    <div class="card-body d-flex my-0 pt-0">
                         <a class="btn btn-sm btn-warning my-auto me-2" href="/tweets/<%= tweet._id %>/edit">EDIT</a>
                         <form action="/tweets/<%= tweet._id %>?_method=DELETE" method="POST">
                             <button type="submit" class="btn btn-sm btn-danger">DELETE</button>
                         </form>
                     </div>
+                    <% } %> 
                 </div>
             </div>
             <div class="card-footer">
