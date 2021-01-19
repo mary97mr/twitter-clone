@@ -4,6 +4,7 @@ const catchAsync = require("../utils/catchAsync");
 const ExpressError = require("../utils/ExpressError");
 const Tweet = require("../models/tweet");
 const { tweetSchema } = require("../schemas");
+const { isLoggedIn } = require("../middleware");
 
 // Joi validation middleware
 const validateTweet = (req, res, next) => {
@@ -23,13 +24,13 @@ router.get("/", async (req, res) => {
     res.render("tweets/index", { tweets: allTweets });
 });
 
-// NEW ROUTE
-router.get("/new", (req, res) => {
+// NEW ROUTE (NOT USING THIS FORM TEMPLATE)
+router.get("/new", isLoggedIn, (req, res) => {
     res.render("tweets/new");
 });
 
 // CREATE ROUTE
-router.post("/", validateTweet, catchAsync(async (req, res, next) => {
+router.post("/", validateTweet, isLoggedIn, catchAsync(async (req, res, next) => {
     const tweetCreated = new Tweet(req.body.tweet);
     await tweetCreated.save();
     req.flash("success", "Successfully created a new post");
@@ -47,7 +48,7 @@ router.get("/:id", catchAsync(async (req, res) => {
 }));
 
 // EDIT ROUTE
-router.get("/:id/edit", catchAsync(async (req, res) => {
+router.get("/:id/edit", isLoggedIn, catchAsync(async (req, res) => {
     const tweet = await Tweet.findById(req.params.id);
     if(!tweet) {
         req.flash("error", "Cannot find that post");
@@ -57,14 +58,14 @@ router.get("/:id/edit", catchAsync(async (req, res) => {
 }));
 
 // UPDATE ROUTE
-router.put("/:id", validateTweet, catchAsync(async (req, res) => {
+router.put("/:id", validateTweet, isLoggedIn, catchAsync(async (req, res) => {
     const updatedTweet = await Tweet.findByIdAndUpdate(req.params.id, req.body.tweet);
     req.flash("success", "Successfully updated your post");
     res.redirect(`/tweets/${updatedTweet._id}`)
 }));
 
 // DELETE ROUTE
-router.delete("/:id", catchAsync(async (req, res) => {
+router.delete("/:id",isLoggedIn, catchAsync(async (req, res) => {
     await Tweet.findByIdAndDelete(req.params.id);
     req.flash("success", "Successfully deleted your post");
     res.redirect("/tweets")

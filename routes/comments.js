@@ -5,6 +5,7 @@ const Tweet = require("../models/tweet");
 const catchAsync = require("../utils/catchAsync");
 const ExpressError = require("../utils/ExpressError");
 const { commentSchema } = require("../schemas");
+const { isLoggedIn } = require("../middleware");
 
 
 // Joi validation middleware
@@ -20,7 +21,7 @@ const validateComment = (req, res, next) => {
 
 // ------- Comments Routes------//
 // Create Comment Route 
-router.post("/", validateComment, catchAsync(async (req, res) => {
+router.post("/", validateComment,isLoggedIn, catchAsync(async (req, res) => {
     const tweet = await Tweet.findById(req.params.id);
     const newComment = new Comment(req.body.comment);
     tweet.comments.push(newComment);
@@ -31,14 +32,14 @@ router.post("/", validateComment, catchAsync(async (req, res) => {
 }));
 
 // Update Comment Route 
-router.put("/:comment_id",validateComment, catchAsync(async (req, res) => {
+router.put("/:comment_id",validateComment, isLoggedIn, catchAsync(async (req, res) => {
     await Comment.findByIdAndUpdate(req.params.comment_id, req.body.comment);
     req.flash("success", "Updated your comment");
     res.redirect(`/tweets/${req.params.id}`);
 }));
 
 // Delete Comment Route 
-router.delete("/:comment_id", catchAsync(async (req, res) => {
+router.delete("/:comment_id", isLoggedIn, catchAsync(async (req, res) => {
     const { id, comment_id } = req.params;
     await Tweet.findByIdAndUpdate(id, { $pull: { comments: comment_id } });
     await Comment.findByIdAndDelete(comment_id);
