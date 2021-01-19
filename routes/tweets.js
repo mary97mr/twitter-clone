@@ -27,7 +27,10 @@ router.post("/", validateTweet, isLoggedIn, catchAsync(async (req, res, next) =>
 
 // SHOW ROUTE
 router.get("/:id", catchAsync(async (req, res) => {
-    const tweet = await Tweet.findById(req.params.id).populate("comments").populate("author");
+    const tweet = await Tweet.findById(req.params.id).populate({
+        path: "comments",
+        populate: { path: "author"} //this populate author is from the Comment model
+    }).populate("author"); //this populate author is from the tweet model
     if(!tweet) {
         req.flash("error", "Cannot find that post");
         res.redirect("/tweets");

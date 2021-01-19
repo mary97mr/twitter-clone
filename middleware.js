@@ -1,4 +1,5 @@
 const Tweet = require("./models/tweet");
+const Comment = require("./models/comment");
 const { tweetSchema, commentSchema } = require("./schemas");
 const ExpressError = require("./utils/ExpressError");
 
@@ -18,6 +19,17 @@ module.exports.isAuthor = async (req, res, next) => {
     if (!tweet.author.equals(req.user._id)) {
         req.flash("error", "You dont have permission to do that.")
         return res.redirect(`/tweets/${tweet._id}`);
+    }
+    next();
+}
+
+module.exports.isCommentAuthor = async (req, res, next) => {
+    //We need to find the comment first
+    const comment = await Comment.findById(req.params.comment_id);
+    // Compare if the author comment and the user loggin is the same
+    if (!comment.author.equals(req.user._id)) {
+        req.flash("error", "You dont have permission to do that.")
+        return res.redirect("back");
     }
     next();
 }

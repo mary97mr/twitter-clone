@@ -3,14 +3,15 @@ const router = express.Router({ mergeParams: true });
 const Comment = require("../models/comment");
 const Tweet = require("../models/tweet");
 const catchAsync = require("../utils/catchAsync");
-const { isLoggedIn, validateComment } = require("../middleware");
+const { isLoggedIn, validateComment, isCommentAuthor } = require("../middleware");
 
 
 // ------- Comments Routes------//
 // Create Comment Route 
-router.post("/", validateComment,isLoggedIn, catchAsync(async (req, res) => {
+router.post("/", validateComment, isLoggedIn, catchAsync(async (req, res) => {
     const tweet = await Tweet.findById(req.params.id);
     const newComment = new Comment(req.body.comment);
+    newComment.author = req.user._id; // We associate every comment to user login.
     tweet.comments.push(newComment);
     await newComment.save();
     await tweet.save();
@@ -19,14 +20,14 @@ router.post("/", validateComment,isLoggedIn, catchAsync(async (req, res) => {
 }));
 
 // Update Comment Route 
-router.put("/:comment_id",validateComment, isLoggedIn, catchAsync(async (req, res) => {
+router.put("/:comment_id",validateComment, isLoggedIn, isCommentAuthor, catchAsync(async (req, res) => {
     await Comment.findByIdAndUpdate(req.params.comment_id, req.body.comment);
     req.flash("success", "Updated your comment");
     res.redirect(`/tweets/${req.params.id}`);
 }));
 
 // Delete Comment Route 
-router.delete("/:comment_id", isLoggedIn, catchAsync(async (req, res) => {
+router.delete("/:comment_id", isLoggedIn, isCommentAuthor, catchAsync(async (req, res) => {
     const { id, comment_id } = req.params;
     await Tweet.findByIdAndUpdate(id, { $pull: { comments: comment_id } });
     await Comment.findByIdAndDelete(comment_id);
