@@ -9,10 +9,15 @@
             <div class="navbar-nav m-auto">
                 <a class="nav-link ps-5" href="/">Home</a>
                 <a class="nav-link ps-5" href="/tweets">Tweets</a>
-                <a class="nav-link ps-5" href="">Notificationes</a>
-                <a class="nav-link ps-5" href="">Perfil</a>
                 <!-- Button trigger twitter modal -->
                 <a class="nav-link ps-5" type="button" data-bs-toggle="modal" data-bs-target="#tweetModal">Twittear</a>
+                <% if(!currentUser) { %>
+                    <a class="nav-link ps-5" href="/register">Register</a>
+                    <a class="nav-link ps-5" href="/login">Login</a>
+                <% } else { %>
+                    <a class="nav-link ps-5" href="">Perfil</a>                 
+                    <a class="nav-link ps-5" href="/logout">Logout</a>
+                <% } %> 
             </div>
         </div>
     </div>

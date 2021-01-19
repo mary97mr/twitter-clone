@@ -9,7 +9,10 @@ const session = require("express-session");
 const ExpressError = require("./utils/ExpressError");
 const tweetRoutes = require("./routes/tweets");
 const commentRoutes = require("./routes/comments");
-const { date } = require("joi");
+const userRoutes = require("./routes/users");
+const User = require("./models/user");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
 
 mongoose.connect("mongodb://localhost:27017/twitter", {
     useCreateIndex: true,
@@ -43,14 +46,23 @@ const sessionConfig = {
 }
 app.use(session(sessionConfig));
 
+// Passport Config
+app.use(passport.initialize());  // middleware is required to initialize Passport
+app.use(passport.session());  // If your application uses persistent login sessions
+passport.use(new LocalStrategy(User.authenticate())); // use static authenticate method of model in LocalStrategy
+passport.serializeUser(User.serializeUser()); // use static serialize and deserialize of model for passport session support
+passport.deserializeUser(User.deserializeUser());
+
 // flash and middleware
 app.use(flash());
 app.use((req, res, next) => {
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
+    res.locals.currentUser = req.user;
     next();
 });
 
+// Home page Route
 app.get("/", (req, res) => {
     res.render("home");
 });
@@ -58,6 +70,7 @@ app.get("/", (req, res) => {
 // Using the routes
 app.use("/tweets", tweetRoutes)
 app.use("/tweets/:id/comments", commentRoutes)
+app.use("/", userRoutes)
 
 // Basic error handling
 app.all("*", (req, res, next) => {
