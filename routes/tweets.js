@@ -58,10 +58,14 @@ router.get("/:id/edit", isLoggedIn, isAuthor, catchAsync(async (req, res) => {
 }));
 
 // UPDATE ROUTE
-router.put("/:id", validateTweet, isLoggedIn, isAuthor, catchAsync(async (req, res) => {
-    const updatedTweet = await Tweet.findByIdAndUpdate(req.params.id, req.body.tweet);
+router.put("/:id", isLoggedIn, upload.array("image"), validateTweet, isAuthor, catchAsync(async (req, res) => {
+    const tweet = await Tweet.findByIdAndUpdate(req.params.id, req.body.tweet);
+    // Define imgs that returns a array.
+    const imgs = req.files.map(f => ({ url: f.path, filename: f.filename }));
+    tweet.images.push(...imgs);//We pass data in separe items and not array.
+    tweet.save() //Saving changes.
     req.flash("success", "Successfully updated your post");
-    res.redirect(`/tweets/${updatedTweet._id}`)
+    res.redirect(`/tweets/${tweet._id}`)
 }));
 
 // DELETE ROUTE

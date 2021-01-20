@@ -1,31 +1,35 @@
 <% layout("layouts/boilerplate") %>
-
+<div class="container">
     <div class="row">
-        <h1 class="text-center">Edit Your Tweet</h1>
-        <div class="col-6 offset-3">
-            <form action="/tweets/<%= tweet._id %>?_method=PUT" method="POST" novalidate class="validated-form">
-                <div class="mb-3">
-                    <label class="form-label" for="description">Share what's in your mind</label>
-                    <textarea class="form-control" name="tweet[description]" id="description" cols="30" rows="4"
-                        required><%= tweet.description %></textarea>
-                    <div class="valid-feedback">Looks good!</div>
+        <div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4">
+            <div class="card shadow rounded">
+                <div class="card-body">
+                    <h1 class="text-center">Edit Your Tweet</h1>
+                    <form action="/tweets/<%= tweet._id %>?_method=PUT" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label" for="description">Share what's in your mind</label>
+                            <textarea class="form-control" name="tweet[description]" id="description" cols="30" rows="4"
+                                required><%= tweet.description %></textarea>
+                            <div class="valid-feedback">Looks good!</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="location">Where are you?</label>
+                            <input class="form-control" type="text" name="tweet[location]" id="location" placeholder="location"
+                                value="<%= tweet.location %>" required>
+                            <div class="valid-feedback">Looks good!</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="image">Add more images to your post.</label>
+                            <input class="form-control" type="file" name="image" id="image" multiple>
+                        </div>
+                        <div class="d-flex">
+                            <a class="text-danger my-auto" href="/tweets/<%= tweet._id %>">Cancel</a>
+                            <button class="btn btn-success ms-auto ">Save</button>
+                        </div>
+                    </form>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label" for="location">Where are you?</label>
-                    <input class="form-control" type="text" name="tweet[location]" id="location" placeholder="location"
-                        value="<%= tweet.location %>" required>
-                    <div class="valid-feedback">Looks good!</div>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label" for="image">Add an image to your tweet</label>
-                    <input class="form-control" type="text" name="tweet[image]" id="image" placeholder="image"
-                        value="<%= tweet.image %>" required>
-                    <div class="valid-feedback">Looks good!</div>
-                </div>
-                <div class="d-flex">
-                    <a class="text-danger my-auto" href="/tweets/<%= tweet._id %>">Cancel</a>
-                    <button class="btn btn-success ms-auto ">Save</button>
-                </div>
-            </form>
+            </div>
+
         </div>
     </div>
+</div>
