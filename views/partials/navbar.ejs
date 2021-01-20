@@ -31,7 +31,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="/tweets" method="POST" novalidate class="validated-form">
+                <form action="/tweets" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label class="form-label" for="description">Share what's in your mind</label>
                         <textarea class="form-control" name="tweet[description]" id="description" cols="30" rows="4"
@@ -46,9 +46,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="image">Add an image to your tweet</label>
-                        <input class="form-control" type="text" name="tweet[image]" id="image" placeholder="image"
-                            required>
-                        <div class="valid-feedback">Looks good!</div>
+                        <input class="form-control" type="file" id="image" name="image" multiple>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger btn-sm" data-bs-dismiss="modal">Close</button>

@@ -4,6 +4,12 @@ const catchAsync = require("../utils/catchAsync");
 const Tweet = require("../models/tweet");
 const { isLoggedIn, validateTweet, isAuthor } = require("../middleware");
 
+//Multer is a middleware that divides our req.body and req.files => [{info pic1},{info pic2},{}...]
+const multer = require("multer"); 
+const { storage } = require("../cloudinary");
+const upload = multer({ storage }); // Now pics will be save in our storage.
+
+
 // ------- Tweets Routes------//
 // INDEX ROUTE
 router.get("/", async (req, res) => {
@@ -17,8 +23,11 @@ router.get("/new", isLoggedIn, (req, res) => {
 });
 
 // CREATE ROUTE
-router.post("/", validateTweet, isLoggedIn, catchAsync(async (req, res, next) => {
+router.post("/", isLoggedIn, upload.array("image"), validateTweet, catchAsync(async (req, res, next) => {
     const tweet = new Tweet(req.body.tweet);
+    // The images are store in req.files. In order we define our tweet model, we need to pass them also the pictures.
+    // As req.files is an array we loop throught it. Of every file we create and obj with the params needed.
+    tweet.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
     tweet.author = req.user; // Now every post created will have associate an author.
     await tweet.save();
     req.flash("success", "Successfully created a new post");
