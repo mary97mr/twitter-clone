@@ -17,11 +17,6 @@ router.get("/", async (req, res) => {
     res.render("tweets/index", { tweets: allTweets });
 });
 
-// NEW ROUTE (NOT USING THIS FORM TEMPLATE)
-router.get("/new", isLoggedIn, (req, res) => {
-    res.render("tweets/new");
-});
-
 // CREATE ROUTE
 router.post("/", isLoggedIn, upload.array("image"), validateTweet, catchAsync(async (req, res, next) => {
     const tweet = new Tweet(req.body.tweet);
@@ -45,27 +40,6 @@ router.get("/:id", catchAsync(async (req, res) => {
         res.redirect("/tweets");
     }
     res.render("tweets/show", { tweet });
-}));
-
-// EDIT ROUTE
-router.get("/:id/edit", isLoggedIn, isAuthor, catchAsync(async (req, res) => {
-    const tweet = await Tweet.findById(req.params.id);
-    if(!tweet) {
-        req.flash("error", "Cannot find that post");
-        res.redirect("/tweets");
-    }
-    res.render("tweets/edit", { tweet });
-}));
-
-// UPDATE ROUTE
-router.put("/:id", isLoggedIn, upload.array("image"), validateTweet, isAuthor, catchAsync(async (req, res) => {
-    const tweet = await Tweet.findByIdAndUpdate(req.params.id, req.body.tweet);
-    // Define imgs that returns a array.
-    const imgs = req.files.map(f => ({ url: f.path, filename: f.filename }));
-    tweet.images.push(...imgs);//We pass data in separe items and not array.
-    tweet.save() //Saving changes.
-    req.flash("success", "Successfully updated your post");
-    res.redirect(`/tweets/${tweet._id}`)
 }));
 
 // DELETE ROUTE
