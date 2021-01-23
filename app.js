@@ -14,6 +14,7 @@ const session = require("express-session");
 const ExpressError = require("./utils/ExpressError");
 const tweetRoutes = require("./routes/tweets");
 const userRoutes = require("./routes/users");
+const timeLineRoute = require("./routes/timeline");
 const User = require("./models/user");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
@@ -72,8 +73,9 @@ app.get("/", (req, res) => {
 });
 
 // Using the routes
-app.use("/tweets", tweetRoutes)
-app.use("/", userRoutes)
+app.use("/tweets", tweetRoutes);
+app.use("/", userRoutes);
+app.use("/", timeLineRoute);
 
 // Basic error handling
 app.all("*", (req, res, next) => {

@@ -11,11 +11,6 @@ const upload = multer({ storage }); // Now pics will be save in our storage.
 
 
 // ------- Tweets Routes------//
-// INDEX ROUTE
-router.get("/", async (req, res) => {
-    const allTweets = await Tweet.find({}).populate("author");
-    res.render("tweets/index", { tweets: allTweets });
-});
 
 // CREATE ROUTE
 router.post("/", isLoggedIn, upload.array("image"), validateTweet, catchAsync(async (req, res, next) => {
@@ -39,8 +34,17 @@ router.get("/:id", catchAsync(async (req, res) => {
         req.flash("error", "Cannot find that post");
         res.redirect("/tweets");
     }
-    res.render("tweets/show", { tweet });
+    res.render("tweet", { tweet });
 }));
+
+// DELETE ROUTE
+router.delete("/:id",isLoggedIn, isAuthor, catchAsync(async (req, res) => {
+    await Tweet.findByIdAndDelete(req.params.id);
+    req.flash("success", "Successfully deleted your post");
+    res.redirect("/tweets")
+}));
+
+// ------- Reply Routes------//
 
 // ------Create reply route--------//
 router.post("/:id", isLoggedIn, upload.array("image"), validateTweet, catchAsync(async (req, res, next) => {
@@ -64,14 +68,5 @@ router.delete("/:id/replyId", isLoggedIn, isAuthor, catchAsync(async (req, res) 
     req.flash("success", "You deleted your tweet");
     res.redirect(`/tweets/${id}`)
 }));
-
-
-// DELETE ROUTE
-router.delete("/:id",isLoggedIn, isAuthor, catchAsync(async (req, res) => {
-    await Tweet.findByIdAndDelete(req.params.id);
-    req.flash("success", "Successfully deleted your post");
-    res.redirect("/tweets")
-}));
-
 
 module.exports = router;
