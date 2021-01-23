@@ -13,7 +13,6 @@ const flash = require("connect-flash");
 const session = require("express-session");
 const ExpressError = require("./utils/ExpressError");
 const tweetRoutes = require("./routes/tweets");
-const commentRoutes = require("./routes/comments");
 const userRoutes = require("./routes/users");
 const User = require("./models/user");
 const passport = require("passport");
@@ -74,7 +73,6 @@ app.get("/", (req, res) => {
 
 // Using the routes
 app.use("/tweets", tweetRoutes)
-app.use("/tweets/:id/comments", commentRoutes)
 app.use("/", userRoutes)
 
 // Basic error handling

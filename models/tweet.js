@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const Comment = require("./comment")
 
 const tweetSchema = new Schema({
     images: [{ // Modify images for an array of pictures.
@@ -11,13 +10,13 @@ const tweetSchema = new Schema({
     location: String,
     createdAt: { type: Date},
     author: {type: Schema.Types.ObjectId, ref: "User"},
-    comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }]
+    replies: [{ type: Schema.Types.ObjectId, ref: "Tweet" }]
 });
 
 tweetSchema.post("findOneAndDelete", async function(doc) {
     if(doc) {
-        await Comment.deleteMany({
-            _id: { $in : doc.comments }
+        await this.deleteMany({
+            _id: { $in : doc.replies }
         });
     }
 });
