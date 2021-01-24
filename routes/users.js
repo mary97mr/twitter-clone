@@ -4,6 +4,7 @@ const catchAsync = require("../utils/catchAsync");
 const { isLoggedIn } = require("../middleware");
 const passport = require("passport");
 const User = require("../models/user");
+const Tweet = require("../models/tweet");
 
 //_____ Register form
 router.get("/register", (req, res) => {
@@ -49,5 +50,17 @@ router.get("/logout", (req, res) => {
     res.redirect("/twitter/home");
 });
 
+// Profile user
+router.get("/:userId", async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const user = await User.findById(userId);
+        const tweets = await Tweet.find().where("author").equals(user._id).populate("author");
+        res.render("users/profile", { user, tweets });
+    } catch (err) {
+        req.flash("error", err.message);
+        res.redirect("/twitter/home")
+    }
+});
 module.exports = router;
 

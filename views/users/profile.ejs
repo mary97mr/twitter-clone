@@ -1,0 +1,74 @@
+<% layout("layouts/boilerplate") %>
+<div class="container">
+    <div class="row">
+        <div class="col-md-10 offset-md-1 col-xl-8 offset-xl-2">
+            <div class="card shadow rounded">
+                <div class="card-header fw-bold text-capitalize">
+                    <%= user.name %>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <img src="https://scontent.fvgo2-2.fna.fbcdn.net/v/t1.0-9/69633206_2937488379659978_7050034880461144064_n.jpg?_nc_cat=106&ccb=2&_nc_sid=8bfeb9&_nc_ohc=3sU89tzgrssAX8WUVVh&_nc_ht=scontent.fvgo2-2.fna&oh=8d9a5d82f1cdec93c5119f81ecccef47&oe=603171B7" alt="" class="img-thumbnail" id="img-profile">
+                        <div><a href="" class="btn btn-primary">Edit profile</a></div>
+                    </div>
+                    <div>
+                        <h5 class="text-capitalize fw-bold"> <%= user.name %> </h5>
+                        <p>@<%= user.username %> </p>
+                    </div>
+                    <div class="mb-3 d-flex">
+                        <p class="fw-bold me-1">135</p>
+                        <span class="text-muted me-3">Followers</span>
+                        <p class="fw-bold me-1">335</p>
+                        <span class="text-muted me-3">Following</span>                          
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <% for(let tweet of tweets) { %>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-2">
+                                <img class="rounded-circle me-auto p-0 m-1" src="<%= tweet.image %>" width="60 px" height="60 px">
+                            </div>
+                            <div class="col-10">
+                                <div class="my-auto ms-1 d-flex">
+                                    <p class="card-title m-0">
+                                        <b> <%= tweet.author.name %></b>
+                                        <span class="text-muted m-0">@<%= tweet.author.name %> · </span>
+                                        <span class="text-muted m-0">
+                                            <%= moment(tweet.createdAt).fromNow() %> -
+                                        </span>
+                                        <a href="/tweets/<%= tweet._id %>" class=" fw-bold ms-2">view</a>
+                                    </p>
+                                    <% if(currentUser && tweet.author.equals(currentUser._id)) { %> 
+                                    <div class="dropdown me-1 m-auto">
+                                        <button type="button" class="btn btn-light " id="dropdownMenuOffset" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuOffset">
+                                            <!-- Delete reply button-->
+                                            <li>
+                                                <form action="/tweets/<%=tweet._id%>?_method=DELETE" method="POST">
+                                                    <button class="dropdown-item" type="submit">Delete</button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <% } %> 
+                                </div>
+                                <div>
+                                    <p> <%= tweet.description %> </p>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <button class="border-0 btn btn-outline-light rounded-circle text-secondary"><i class="far fa-comment"></i> 22</button>   
+                                    <button class="border-0 btn btn-outline-light rounded-circle text-secondary"><i class="fas fa-retweet"></i> 25</button> 
+                                    <button class="border-0 btn btn-outline-light rounded-circle text-secondary"><i class="fas fa-heart"></i> 5.380</button> 
+                                    <button class="border-0 btn btn-outline-light rounded-circle text-secondary"><i class="fas fa-share-alt"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="my-0">
+                <% } %> 
+            </div>
+        </div>
+    </div>
+</div>

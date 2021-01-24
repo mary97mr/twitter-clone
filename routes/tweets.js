@@ -41,7 +41,7 @@ router.get("/:id", catchAsync(async (req, res) => {
 router.delete("/:id",isLoggedIn, isAuthor, catchAsync(async (req, res) => {
     await Tweet.findByIdAndDelete(req.params.id);
     req.flash("success", "Successfully deleted your post");
-    res.redirect("/twitter/home")
+    res.redirect("back")
 }));
 
 
