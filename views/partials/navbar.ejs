@@ -1,22 +1,21 @@
 <nav class="navbar sticky-top navbar-expand-lg navbar-light mb-4">
     <div class="container-fluid text-dark">
-        <a class="navbar-brand" href="#"><i class="fab fa-twitter"></i></a>
+        <a class="navbar-brand" href="/"><i class="fab fa-twitter"></i></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
             aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav m-auto">
-                <a class="nav-link ps-5" href="/">Home</a>
-                <a class="nav-link ps-5" href="/tweets">Tweets</a>
+                <a class="nav-link ps-5 align-baseline" href="/twitter/home"><i class="fas fa-home me-1"></i>Home</a>
                 <!-- Button trigger twitter modal -->
-                <a class="nav-link ps-5" type="button" data-bs-toggle="modal" data-bs-target="#tweetModal">Twittear</a>
+                <a class="nav-link ps-5" type="button" data-bs-toggle="modal" data-bs-target="#tweetModal"><i class="fas fa-pen me-1"></i>Twittear</a>
                 <% if(!currentUser) { %>
-                    <a class="nav-link ps-5" href="/register">Register</a>
-                    <a class="nav-link ps-5" href="/login">Login</a>
+                    <a class="nav-link ps-5" href="/register"><i class="fas fa-user-plus me-1"></i> Register</a>
+                    <a class="nav-link ps-5" href="/login"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
                 <% } else { %>
-                    <a class="nav-link ps-5" href="">Perfil</a>                 
-                    <a class="nav-link ps-5" href="/logout">Logout</a>
+                    <a class="nav-link ps-5" href=""><i class="fas fa-user me-1"></i> Profile</a>                 
+                    <a class="nav-link ps-5" href="/logout"> <i class="fas fa-sign-out-alt me-1"></i>Logout</a>
                 <% } %> 
             </div>
         </div>

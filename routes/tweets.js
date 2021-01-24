@@ -32,7 +32,7 @@ router.get("/:id", catchAsync(async (req, res) => {
     }).populate("author"); //this populate author is from the tweet model
     if(!tweet) {
         req.flash("error", "Cannot find that post");
-        res.redirect("/tweets");
+        res.redirect("/twitter/home");
     }
     res.render("tweet", { tweet });
 }));
@@ -41,32 +41,8 @@ router.get("/:id", catchAsync(async (req, res) => {
 router.delete("/:id",isLoggedIn, isAuthor, catchAsync(async (req, res) => {
     await Tweet.findByIdAndDelete(req.params.id);
     req.flash("success", "Successfully deleted your post");
-    res.redirect("/tweets")
+    res.redirect("/twitter/home")
 }));
 
-// ------- Reply Routes------//
-
-// ------Create reply route--------//
-router.post("/:id", isLoggedIn, upload.array("image"), validateTweet, catchAsync(async (req, res, next) => {
-    const tweet = await Tweet.findById(req.params.id).populate("replies");
-    const replyTweet = new Tweet(req.body.tweet);
-    replyTweet.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
-    replyTweet.author = req.user._id;
-    await replyTweet.save();
-    await tweet.replies.push(replyTweet);
-    await tweet.save();
-    req.flash("success", "Successfully created a new post");
-    res.redirect(`/tweets/${tweet._id}`)
-}));
-
-// ------Delete reply route ----
-
-router.delete("/:id/replyId", isLoggedIn, isAuthor, catchAsync(async (req, res) => {
-    const { id, replyId } = req.params;
-    await Tweet.findByIdAndUpdate(id, { $pull: { replies: replyId } });
-    await Tweet.findByIdAndDelete( replyId );
-    req.flash("success", "You deleted your tweet");
-    res.redirect(`/tweets/${id}`)
-}));
 
 module.exports = router;

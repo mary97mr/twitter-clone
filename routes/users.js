@@ -22,7 +22,7 @@ router.post("/register", catchAsync(async (req, res, next) => {
         req.login(createdUser, err => {
             if (err) return next(err)
             req.flash("success", "Welcome to social media.")
-            res.redirect("/tweets/");
+            res.redirect("/twitter/home");
         });
     } catch(err) {
         req.flash("error", err.message);
@@ -39,14 +39,14 @@ router.post("/login", passport.authenticate("local", { failureFlash: true, failu
     // To login we use a method from passport, so we need to require it.
     // passport.authenticate() This mehtod compares the data for us.
     req.flash("success", "Welcome back to social media.")
-    res.redirect("/tweets/");
+    res.redirect("/twitter/home/");
 });
 
 //_____Logout logic
 router.get("/logout", (req, res) => {
     req.logout();
     req.flash("success", "Come back Soon");
-    res.redirect("/tweets");
+    res.redirect("/twitter/home");
 });
 
 module.exports = router;
