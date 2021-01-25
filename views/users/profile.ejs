@@ -2,18 +2,26 @@
 <div class="container">
     <div class="row">
         <div class="col-md-10 offset-md-1 col-xl-8 offset-xl-2">
+            <!-- Profile Info -->
             <div class="card shadow rounded">
-                <div class="card-header fw-bold text-capitalize">
-                    <%= user.name %>
-                </div>
+                <div class="card-header fw-bold text-capitalize"> <%= user.name %> </div>
                 <div class="card-body">
                     <div class="d-flex justify-content-between mb-3">
-                        <img src="https://scontent.fvgo2-2.fna.fbcdn.net/v/t1.0-9/69633206_2937488379659978_7050034880461144064_n.jpg?_nc_cat=106&ccb=2&_nc_sid=8bfeb9&_nc_ohc=3sU89tzgrssAX8WUVVh&_nc_ht=scontent.fvgo2-2.fna&oh=8d9a5d82f1cdec93c5119f81ecccef47&oe=603171B7" alt="" class="img-thumbnail" id="img-profile">
-                        <div><a href="" class="btn btn-primary">Edit profile</a></div>
+                        <img src="<%= user.image.url %>" alt="" class="img-thumbnail rounded-circle" id="img-profile">
+                        <!-- Button edit Profile modal -->
+                        <% if(currentUser && user._id.equals(currentUser._id)) { %> 
+                        <div><button type="button" class="btn btn-outline-primary rounded-pill fw-bold" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit profile</button></div>
+                        <% } %> 
                     </div>
-                    <div>
+                    <div class="mb-2">
                         <h5 class="text-capitalize fw-bold"> <%= user.name %> </h5>
-                        <p>@<%= user.username %> </p>
+                        @<%= user.username %>
+                    </div>
+                    <div class="mb-2">
+                        <p><%= user.biography %></p>
+                        <% if(user.location){ %>  
+                            <span class="text-muted"><i class="fas fa-map-marker-alt"></i> <%= user.location %></span>
+                        <% } %> 
                     </div>
                     <div class="mb-3 d-flex">
                         <p class="fw-bold me-1">135</p>
@@ -23,12 +31,51 @@
                     </div>
                 </div>
             </div>
+            <!-- Edit Profile Modal -->
+            <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModal" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title fw-bold" id="editProfileModal">Edit Profile</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="/<%= user._id%>?_method=PUT" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Name</label>
+                                    <input class="form-control" type="text" name="user[name]" id="name" value="<%= user.name %>" placeholder="john" required>
+                                    <div class="valid-feedback">Looks Good!</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="biography" class="form-label">Biography</label>
+                                    <input class="form-control" type="text" name="user[biography]" id="biography" maxlength="160" value="<%= user.biography %>" placeholder="About you">
+                                    <div class="valid-feedback">Looks Good!</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="location" class="form-label">Location</label>
+                                    <input class="form-control" type="text" name="user[location]" id="location" value="<%= user.location %>" placeholder="London, UK" maxlength="30">
+                                    <div class="valid-feedback">Looks Good!</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="image" class="form-label">Profile picture</label>
+                                    <input class="form-control" type="file" name="image" id="image">
+                                    <div class="invalid-feedback fw-bold">You must add profile picture.</div>
+                                </div>
+                                <div class="modal-footer ">
+                                    <button type="submit" class="btn btn-primary rounded-pill fw-bold">Save changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Displaying tweets of user -->
             <div class="card">
                 <% for(let tweet of tweets) { %>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-2">
-                                <img class="rounded-circle me-auto p-0 m-1" src="<%= tweet.image %>" width="60 px" height="60 px">
+                                <img class="rounded-circle me-auto p-0 m-1" src="<%= tweet.author.image.url %>" width="60 px" height="60 px">
                             </div>
                             <div class="col-10">
                                 <div class="my-auto ms-1 d-flex">
@@ -57,6 +104,33 @@
                                 <div>
                                     <p> <%= tweet.description %> </p>
                                 </div>
+                                <!-- Displaying Carousel if array images is not empty -->
+                                <% if (tweet.images.length >= 1) { %> 
+                                <div id="tweetCarousel" class="carousel slide" data-bs-ride="carousel">
+                                    <ol class="carousel-indicators">
+                                        <% tweet.images.forEach((img, i ) => { %> 
+                                        <li data-bs-target="#tweetCarousel" data-bs-slide-to="<%= i %>" class="active"></li>
+                                        <% }) %> 
+                                    </ol>
+                                    <div class="carousel-inner">
+                                        <% tweet.images.forEach((img, i ) => { %> 
+                                        <div class="carousel-item <%= (i === 0) ? "active" : "" %> "> 
+                                            <img src="<%= img.url %> " class=" img-fluid img-thumbnail mb-2" alt="...">
+                                        </div>
+                                        <% }); %> 
+                                    </div>
+                                    <% if (tweet.images.length > 1) {  %> 
+                                    <a class="carousel-control-prev" href="#tweetCarousel" role="button" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Previous</span>
+                                    </a>
+                                    <a class="carousel-control-next" href="#tweetCarousel" role="button" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Next</span>
+                                    </a>
+                                    <% } %> 
+                                </div>
+                                <% } %> 
                                 <div class="d-flex justify-content-between">
                                     <button class="border-0 btn btn-outline-light rounded-circle text-secondary"><i class="far fa-comment"></i> 22</button>   
                                     <button class="border-0 btn btn-outline-light rounded-circle text-secondary"><i class="fas fa-retweet"></i> 25</button> 
