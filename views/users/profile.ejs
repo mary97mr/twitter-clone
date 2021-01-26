@@ -37,44 +37,6 @@
                     </div>
                 </div>
             </div>
-            <!-- Edit Profile Modal -->
-            <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModal" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title fw-bold" id="editProfileModal">Edit Profile</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form action="/<%= user._id%>?_method=PUT" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
-                                <div class="mb-3">
-                                    <label for="name" class="form-label">Name</label>
-                                    <input class="form-control" type="text" name="user[name]" id="name" value="<%= user.name %>" placeholder="john" required>
-                                    <div class="valid-feedback">Looks Good!</div>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="biography" class="form-label">Biography</label>
-                                    <input class="form-control" type="text" name="user[biography]" id="biography" maxlength="160" value="<%= user.biography %>" placeholder="About you">
-                                    <div class="valid-feedback">Looks Good!</div>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="location" class="form-label">Location</label>
-                                    <input class="form-control" type="text" name="user[location]" id="location" value="<%= user.location %>" placeholder="London, UK" maxlength="30">
-                                    <div class="valid-feedback">Looks Good!</div>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="image" class="form-label">Profile picture</label>
-                                    <input class="form-control" type="file" name="image" id="image">
-                                    <div class="invalid-feedback fw-bold">You must add profile picture.</div>
-                                </div>
-                                <div class="modal-footer ">
-                                    <button type="submit" class="btn btn-primary rounded-pill fw-bold">Save changes</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <!-- Displaying tweets of user -->
             <div class="card">
                 <% for(let tweet of tweets) { %>
@@ -138,16 +100,60 @@
                                 </div>
                                 <% } %> 
                                 <div class="d-flex justify-content-between">
-                                    <button class="border-0 btn btn-outline-light rounded-circle text-secondary"><i class="far fa-comment"></i> 22</button>   
-                                    <button class="border-0 btn btn-outline-light rounded-circle text-secondary"><i class="fas fa-retweet"></i> 25</button> 
-                                    <button class="border-0 btn btn-outline-light rounded-circle text-secondary"><i class="fas fa-heart"></i> 5.380</button> 
-                                    <button class="border-0 btn btn-outline-light rounded-circle text-secondary"><i class="fas fa-share-alt"></i></button>
+                                    <button class="btn btn-share-reply"><i class="far fa-comment"></i> 22</button>   
+                                    <button class="btn btn-retweet"><i class="fas fa-retweet"></i> 25</button> 
+                                    <form action="/tweets/<%= tweet._id %>/like" method="POST">
+                                        <% if(currentUser && tweet.likes.some(like => { return like.equals(currentUser._id)})) { %>
+                                        <button class="btn btn-like liked"><i class="fas fa-heart"></i> 5.380</button>
+                                        <% } else { %>
+                                        <button class="btn btn-like"><i class="fas fa-heart"></i> 5.380</button>
+                                        <% } %> 
+                                    </form>
+                                    <button class="btn btn-share-reply"><i class="fas fa-share-alt"></i></button>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <hr class="my-0">
                 <% } %> 
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="editProfileModal">Edit Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/<%= user._id%>?_method=PUT" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input class="form-control" type="text" name="user[name]" id="name" value="<%= user.name %>" placeholder="john" required>
+                        <div class="valid-feedback">Looks Good!</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="biography" class="form-label">Biography</label>
+                        <input class="form-control" type="text" name="user[biography]" id="biography" maxlength="160" value="<%= user.biography %>" placeholder="About you">
+                        <div class="valid-feedback">Looks Good!</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Location</label>
+                        <input class="form-control" type="text" name="user[location]" id="location" value="<%= user.location %>" placeholder="London, UK" maxlength="30">
+                        <div class="valid-feedback">Looks Good!</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Profile picture</label>
+                        <input class="form-control" type="file" name="image" id="image">
+                        <div class="invalid-feedback fw-bold">You must add profile picture.</div>
+                    </div>
+                    <div class="modal-footer ">
+                        <button type="submit" class="btn btn-primary rounded-pill fw-bold">Save changes</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

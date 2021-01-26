@@ -11,3 +11,38 @@
     width: 40%;
     height: 100%;
 }
+
+.btn-share-reply, .btn-retweet, .btn-like {
+    border: 0;
+    border-width: 0;
+    color: #6c757d;
+    border-radius: 50%;
+}
+
+.btn-share-reply:hover, .btn-share-reply:focus, .btn-like:hover, .btn-like:focus, .btn-retweet:hover, .btn-retweet:focus {
+    border-color: transparent;
+    box-shadow: none;
+}
+
+.btn-share-reply:hover, .btn-share-reply:focus {
+    background-color: rgba(0, 180, 216, 0.1);
+    color: #00b4d8 ;
+}
+
+.btn-like:hover {
+    background-color: rgba(230, 57, 70, 0.1);
+    color: #e63946;
+}
+
+.liked {
+    color: #e63946;
+}
+
+.btn-retweet:hover {
+    background-color: rgba(73, 160, 120, 0.1);
+    color: #49a078;
+}
+
+.retweeted {
+    color: #49a078;
+}

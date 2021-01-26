@@ -30,7 +30,7 @@ router.get("/:id", catchAsync(async (req, res) => {
     const tweet = await Tweet.findById(req.params.id).populate({
         path: "replies",
         populate: { path: "author" }
-    }).populate("author"); //this populate author is from the tweet model
+    }).populate("author").populate("likes"); //this populate author is from the tweet model
     if(!tweet) {
         req.flash("error", "Cannot find that post");
         return res.redirect("/twitter/home");
@@ -40,13 +40,33 @@ router.get("/:id", catchAsync(async (req, res) => {
 
 // DELETE ROUTE
 router.delete("/:id", isAuthor, catchAsync(async (req, res) => {
-    await Tweet.findByIdAndDelete(req.params.id);
+    const tweet = await Tweet.findByIdAndDelete(req.params.id);
     for (let image of tweet.images) {
         cloudinary.uploader.destroy(image);
     }
     req.flash("success", "Successfully deleted your post");
-    res.redirect("back")
+    res.redirect("/twitter/home")
 }));
 
+// Likes Logic
+router.post("/:id/like", isLoggedIn, catchAsync(async (req, res, next) => {
+    try {
+        const tweet = await Tweet.findById(req.params.id);
+        // Checks if currentuser is in tweet.likes array
+        const userLike = await tweet.likes.some(like => { return like.equals(req.user._id) })
+        if (userLike) {
+            tweet.likes.pull(req.user._id);
+            req.flash("success", "Unlike")
+        } else {
+            tweet.likes.push(req.user);
+            req.flash("success", "You liked the post")
+        }
+        await tweet.save();
+        return res.redirect("back")
+    } catch (err) {
+        req.flash("error", err.message);
+        res.redirect("back");
+    }
+}));
 
 module.exports = router;

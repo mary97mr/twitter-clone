@@ -2,9 +2,9 @@
 <div class="row">
     <div class="col-md-4"></div>
     <div class="col-md-8 col-lg-6">
-        <div class="card mb-3">
+        <div class="card">
             <div class="card-header">
-                <a class="my-auto" href="/twitter/home"><i class="fas fa-arrow-left ms-3"></i></a>
+                <a class="my-auto" href="/twitter/home"><i class="fas fa-arrow-left mx-3"></i></a>
                 Twittear
             </div>
             <div class="row mt-2">
@@ -19,13 +19,7 @@
             </div>
             <div class="row">
                 <div class="col-10 offset-1">
-                    <p class="card-text">
-                        <%= tweet.description %> Lorem ipsum, dolor sit amet consectetur
-                            adipisicing
-                            elit. Modi quod dolorem nostrum officia temporibus quos qui porro totam ipsa tenetur cum
-                            sequi,
-                            magni ullam atque doloremque eligendi itaque? Quam, optio!
-                    </p>
+                    <p class="card-text"> <%= tweet.description %> </p>
                     <!-- Displaying Carousel if array images is not empty -->
                     <% if (tweet.images.length >= 1) { %> 
                     <div id="tweetCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -41,6 +35,7 @@
                             </div>
                             <% }); %> 
                         </div>
+                        <!-- Displaying controls ONLY if there's more than one img. -->
                         <% if (tweet.images.length > 1) {  %> 
                         <a class="carousel-control-prev" href="#tweetCarousel" role="button" data-bs-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -54,58 +49,43 @@
                     </div>
                     <% } %> 
                     <ul class="list-group list-group-flush mb-2">
-                        <li class="list-group-item">
-                            <%= tweet.location %>
+                        <li class="list-group-item"> <%= tweet.location %> </li>
+                        <li class="list-group-item text-muted"><%= moment(tweet.createdAt).format("lll")%></li>
+                        <li class="list-group-item d-flex"> 
+                            <a class="text-decoration-none text-dark fw-bold me-4" href="">11 <span class="text-muted">Replies</span></a>
+                            <a class="text-decoration-none text-dark fw-bold me-4" href="">22 <span class="text-muted">Retweets</span></a> 
+                            <a class="text-decoration-none text-dark fw-bold" href="">  <span class="text-muted">Likes</span></a> 
                         </li>
-                        <li class="list-group-item text-muted"><%= moment(tweet.createdAt).format("lll")%> </li>
                     </ul>
                 </div>
             </div>
             <div class="card-footer">
                 <div class="d-flex justify-content-evenly">
-                    <button class="border-0 btn btn-outline-light rounded-circle text-secondary" type="button" data-bs-toggle="collapse"
+                    <!-- Button Reply used display collapsed form -->
+                    <button class="btn btn-share-reply" type="button" data-bs-toggle="collapse"
                     data-bs-target="#collapseReply" aria-expanded="false" aria-controls="collapseReply">
-                    <i class="far fa-comment"></i> 22
-                    </button>   
-                    <button class="border-0 btn btn-outline-light rounded-circle text-secondary"><i class="fas fa-retweet"></i> 25</button> 
-                    <button class="border-0 btn btn-outline-light rounded-circle text-secondary"><i class="fas fa-heart"></i> 5.380</button> 
-                    <button class="border-0 btn btn-outline-light rounded-circle text-secondary"><i class="fas fa-share-alt"></i></button>
+                    <i class="far fa-comment"></i>
+                    </button>
+                    <!-- Retweet Button -->
+                    <button class="btn btn-retweet"><i class="fas fa-retweet"></i></button>
+                    <!-- Like buttons -->
+                    <form action="/tweets/<%= tweet._id %>/like" method="POST">
+                        <% if(currentUser && tweet.likes.some(like => { return like.equals(currentUser._id)})) {  %>
+                        <button class="btn btn-like liked"><i class="fas fa-heart"></i></button>
+                        <% } else { %>
+                        <button class="btn btn-like"><i class="fas fa-heart"></i></button>
+                        <% } %>
+                    </form>
+                    <button class="btn btn-share-reply"><i class="fas fa-share-alt"></i></button>
                     <% if(currentUser && tweet.author.equals(currentUser._id)) { %>
                     <form action="/tweets/<%= tweet._id %>?_method=DELETE" method="POST">
-                        <button type="submit" class="border-0 btn btn-outline-light"><i class="fas fa-trash text-danger"></i></button>
+                        <button type="submit" class="btn btn-like liked"><i class="fas fa-trash text-danger"></i></button>
                     </form>
                     <% } %> 
                 </div>
             </div>
         </div>
         <!--Reply section-->
-        <!--Collapse reply tweet form -->
-        <div class="collapse my-3" id="collapseReply">
-            <div class="card py-3">
-                <div class=" card-body col-10 offset-1">
-                    <form id="add-reply-form" action="/tweets/<%= tweet._id %>" method="POST" class="validated-form" novalidate enctype="multipart/form-data">
-                        <div class="mb-3">
-                            <input class="form-control" type="text" disabled value="sdwed">
-                        </div>
-                        <div class="mb-3">
-                            <textarea class="form-control" placeholder="Tweetea tu respuesta" cols="70" rows="5" form="add-reply-form" name="tweet[description]" required></textarea>
-                            <div class="valid-feedback">Looks Good</div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label" for="location">Where are you?</label>
-                            <input class="form-control" type="text" name="tweet[location]" id="location"
-                                placeholder="location" required>
-                            <div class="valid-feedback">Looks good!</div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label" for="image">Add an image to your tweet</label>
-                            <input class="form-control" type="file" id="image" name="image" multiple>
-                        </div>
-                        <button type="submit" class="btn btn-success btn-sm">Post</button>
-                    </form>
-                </div>
-            </div>
-        </div>
         <!--Display replies by looping through them-->
         <% if (tweet.replies.length >= 1) { %> 
             <div class="card mb-3">           
@@ -113,7 +93,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-2">
-                            <img class="rounded-circle me-auto p-0 m-1" src="<%= tweet.image %>" width="60 px" height="60 px">
+                            <img class="rounded-circle me-auto p-0 m-1" src="<%= reply.author.image.url %>" width="60 px" height="60 px">
                         </div>
                         <div class="col-10">
                             <div class="my-auto ms-1 d-flex">
@@ -139,15 +119,18 @@
                                 </div>
                                 <% } %> 
                             </div>
-                            <div>
-                                <p> <%= reply.description %> </p>
-                            </div>
-
+                            <div><p> <%= reply.description %> </p></div>
                             <div class="d-flex justify-content-between">
-                                <button class="border-0 btn btn-outline-light rounded-circle text-secondary"><i class="far fa-comment"></i> 22</button>   
-                                <button class="border-0 btn btn-outline-light rounded-circle text-secondary"><i class="fas fa-retweet"></i> 25</button> 
-                                <button class="border-0 btn btn-outline-light rounded-circle text-secondary"><i class="fas fa-heart"></i> 5.380</button> 
-                                <button class="border-0 btn btn-outline-light rounded-circle text-secondary"><i class="fas fa-share-alt"></i></button>
+                                <button class="btn btn-share-reply"><i class="far fa-comment"></i> 22</button>   
+                                <button class="btn btn-retweet"><i class="fas fa-retweet"></i> 25</button>
+                                <form action="/tweets/<%= reply._id %>/like" method="POST">
+                                    <% if(currentUser && reply.likes.some(like => { return like.equals(currentUser._id)})) { %>
+                                    <button class="btn btn-like liked"><i class="fas fa-heart"></i> 5.380</button>
+                                    <% } else { %>
+                                    <button class="btn btn-like"><i class="fas fa-heart"></i> 5.380</button>
+                                    <% } %> 
+                                </form>  
+                                <button class="btn btn-share-reply"><i class="fas fa-share-alt"></i></button>
                             </div>
                         </div>
                     </div>
@@ -159,4 +142,31 @@
     <!-- reply section END -->
     </div>
     <div class="col-lg-2"></div>
+</div>
+<!--Collapse reply tweet form -->
+<div class="collapse my-3" id="collapseReply">
+    <div class="card py-3">
+        <div class=" card-body col-10 offset-1">
+            <form id="add-reply-form" action="/tweets/<%= tweet._id %>" method="POST" class="validated-form" novalidate enctype="multipart/form-data">
+                <div class="mb-3">
+                    <input class="form-control" type="text" disabled value="sdwed">
+                </div>
+                <div class="mb-3">
+                    <textarea class="form-control" placeholder="Tweetea tu respuesta" cols="70" rows="5" form="add-reply-form" name="tweet[description]" required></textarea>
+                    <div class="valid-feedback">Looks Good</div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="location">Where are you?</label>
+                    <input class="form-control" type="text" name="tweet[location]" id="location"
+                        placeholder="location" required>
+                    <div class="valid-feedback">Looks good!</div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="image">Add an image to your tweet</label>
+                    <input class="form-control" type="file" id="image" name="image" multiple>
+                </div>
+                <button type="submit" class="btn btn-success btn-sm">Post</button>
+            </form>
+        </div>
+    </div>
 </div>

@@ -10,7 +10,8 @@ const tweetSchema = new Schema({
     location: String,
     createdAt: { type: Date},
     author: {type: Schema.Types.ObjectId, ref: "User"},
-    replies: [{ type: Schema.Types.ObjectId, ref: "Tweet" }]
+    replies: [{ type: Schema.Types.ObjectId, ref: "Tweet" }],
+    likes: [{ type: Schema.Types.ObjectId, ref: "User" }]
 });
 
 tweetSchema.post("findOneAndDelete", async function(doc) {
