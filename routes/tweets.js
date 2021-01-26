@@ -6,7 +6,8 @@ const { isLoggedIn, validateTweet, isAuthor } = require("../middleware");
 
 //Multer is a middleware that divides our req.body and req.files => [{info pic1},{info pic2},{}...]
 const multer = require("multer"); 
-const { storage } = require("../cloudinary");
+const { storage, cloudinary } = require("../cloudinary");
+const tweet = require("../models/tweet");
 const upload = multer({ storage }); // Now pics will be save in our storage.
 
 
@@ -32,14 +33,17 @@ router.get("/:id", catchAsync(async (req, res) => {
     }).populate("author"); //this populate author is from the tweet model
     if(!tweet) {
         req.flash("error", "Cannot find that post");
-        res.redirect("/twitter/home");
+        return res.redirect("/twitter/home");
     }
     res.render("tweet", { tweet });
 }));
 
 // DELETE ROUTE
-router.delete("/:id",isLoggedIn, isAuthor, catchAsync(async (req, res) => {
+router.delete("/:id", isAuthor, catchAsync(async (req, res) => {
     await Tweet.findByIdAndDelete(req.params.id);
+    for (let image of tweet.images) {
+        cloudinary.uploader.destroy(image);
+    }
     req.flash("success", "Successfully deleted your post");
     res.redirect("back")
 }));

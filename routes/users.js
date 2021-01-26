@@ -89,5 +89,35 @@ router.put("/:userId", isLoggedIn, isUserProfile, upload.single("image"),catchAs
     req.flash("success", "Updated profile.");
     res.redirect(`/${userUpdated.id}`);
 }));
+
+// Following user logic
+router.get("/follow/:userId", isLoggedIn, catchAsync(async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const currentUser = req.user;
+        const user = await User.findById(userId);
+        // Checks if currentuser is in user.followers array
+        const follower = user.followers.some(follower => { return follower.equals(currentUser._id) });
+        // Checks if user is in current user following array
+        const following = currentUser.following.some(following => { return following.equals(user._id) });
+
+        if (!follower && !following) { //not found follower in user followers
+            user.followers.push(currentUser); // push currentUser to user followers
+            req.user.following.push(user); //push user to currentUser following
+            req.flash("success", `You're now following to ${user.username}`)
+        } else {
+            user.followers.pull(currentUser._id) //user found, remove currentUser from user followers
+            req.user.following.pull(user._id) //remove user from currentUser following
+            req.flash("error", `Unfollowed to ${user.username}`)
+        }
+        user.save();
+        currentUser.save()
+        res.redirect(`/${user._id}`)
+    } catch (err) {
+        req.flash("error", err.message);
+        res.redirect("back")
+    }
+}));
+    
 module.exports = router;
 

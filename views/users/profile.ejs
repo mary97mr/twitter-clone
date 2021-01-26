@@ -10,7 +10,13 @@
                         <img src="<%= user.image.url %>" alt="" class="img-thumbnail rounded-circle" id="img-profile">
                         <!-- Button edit Profile modal -->
                         <% if(currentUser && user._id.equals(currentUser._id)) { %> 
-                        <div><button type="button" class="btn btn-outline-primary rounded-pill fw-bold" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit profile</button></div>
+                        <div class="mt-auto"><button type="button" class="btn btn-outline-primary rounded-pill fw-bold" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit profile</button></div>
+                        <% } else { %>
+                            <% if (currentUser && user.followers.some((follower) => { return follower.equals(currentUser._id) })) { %>
+                            <div class="mt-auto"><a href="/follow/<%= user._id %>" class="btn btn-primary rounded-pill fw-bold" id="btn-unfollow">Following</a></div>
+                            <% } else { %>
+                            <div class="mt-auto"><a href="/follow/<%= user._id %>" class="btn btn-outline-primary rounded-pill fw-bold">Follow</a></div>
+                            <% } %> 
                         <% } %> 
                     </div>
                     <div class="mb-2">
@@ -24,9 +30,9 @@
                         <% } %> 
                     </div>
                     <div class="mb-3 d-flex">
-                        <p class="fw-bold me-1">135</p>
+                        <p class="fw-bold me-1"><%= user.followers.length %> </p>
                         <span class="text-muted me-3">Followers</span>
-                        <p class="fw-bold me-1">335</p>
+                        <p class="fw-bold me-1"><%= user.following.length %></p>
                         <span class="text-muted me-3">Following</span>                          
                     </div>
                 </div>
