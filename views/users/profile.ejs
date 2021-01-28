@@ -48,29 +48,20 @@
                             <div class="col-10">
                                 <div class="my-auto ms-1 d-flex">
                                     <p class="card-title m-0">
-                                        <b> <%= tweet.author.name %></b>
-                                        <span class="text-muted m-0">@<%= tweet.author.name %> · </span>
+                                        <a href="/<%=tweet.author._id %>" class="text-decoration-none text-dark"><b><%= tweet.author.name %></b></a>
+                                        <span class="text-muted m-0">@<%= tweet.author.username %> · </span>
                                         <span class="text-muted m-0">
-                                            <%= moment(tweet.createdAt).fromNow() %> -
+                                            <%= moment(tweet.date).fromNow(true) %> -
                                         </span>
                                         <a href="/tweets/<%= tweet._id %>" class=" fw-bold ms-2">view</a>
                                     </p>
-                                    <% if(currentUser && tweet.author.equals(currentUser._id)) { %> 
-                                    <div class="dropdown me-1 m-auto">
-                                        <button type="button" class="btn btn-light " id="dropdownMenuOffset" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
-                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuOffset">
-                                            <!-- Delete reply button-->
-                                            <li>
-                                                <form action="/tweets/<%=tweet._id%>?_method=DELETE" method="POST">
-                                                    <button class="dropdown-item" type="submit">Delete</button>
-                                                </form>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <% } %> 
                                 </div>
                                 <div>
-                                    <p> <%= tweet.description %> </p>
+                                    <% if(tweet.parent) { %> 
+                                    <p>Replying to <a href="/<%=tweet.parent._id %>">@<%= 
+                                    tweet.parent.author.username %></a></p>
+                                    <% } %> 
+                                    <p> <%= tweet.text %> </p>
                                 </div>
                                 <!-- Displaying Carousel if array images is not empty -->
                                 <% if (tweet.images.length >= 1) { %> 
@@ -110,6 +101,11 @@
                                         <% } %> 
                                     </form>
                                     <button class="btn btn-share-reply"><i class="fas fa-share-alt"></i></button>
+                                    <% if(currentUser && tweet.author.equals(currentUser._id)) { %> 
+                                    <form action="/tweets/<%=tweet._id%>?_method=DELETE" method="POST">
+                                        <button class="btn btn-like liked" type="submit"><i class="fas fa-trash-alt text-danger"></i></button>
+                                    </form>
+                                    <% } %> 
                                 </div>
                             </div>
                         </div>
