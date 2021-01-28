@@ -6,20 +6,21 @@ const tweetSchema = new Schema({
         url: String,
         filename : String
     }],
-    description: String,
-    location: String,
-    createdAt: { type: Date},
-    author: {type: Schema.Types.ObjectId, ref: "User"},
+    text: String,
+    date: { type: Date, default: Date.now },
+    author: { type: Schema.Types.ObjectId, ref: "User" },
+    parent: { type: Schema.Types.ObjectId, ref: "Tweet", default:null },
     replies: [{ type: Schema.Types.ObjectId, ref: "Tweet" }],
     likes: [{ type: Schema.Types.ObjectId, ref: "User" }]
 });
 
-tweetSchema.post("findOneAndDelete", async function(doc) {
-    if(doc) {
-        await this.deleteMany({
-            _id: { $in : doc.replies }
-        });
-    }
-});
+// Fix it, not working
+// tweetSchema.post("findOneAndDelete", async function(doc) {
+//     if(doc) {
+//         await this.deleteMany({
+//             _id: { $in : doc.replies }
+//         });
+//     }
+// });
 
 module.exports = mongoose.model("Tweet", tweetSchema);

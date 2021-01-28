@@ -23,6 +23,15 @@ module.exports.isAuthor = async (req, res, next) => {
     next();
 }
 
+module.exports.isReplyAuthor = async (req, res, next) => {
+    const tweet = await Tweet.findById(req.params.replyId);
+    if (!tweet.author.equals(req.user._id)) {
+        req.flash("error", "You dont have permission to do that.")
+        return res.redirect("back")
+    }
+    next();
+}
+
 module.exports.isUserProfile = async (req, res, next) => {
     //We need to find the user first 
     const user = await User.findById(req.params.userId);

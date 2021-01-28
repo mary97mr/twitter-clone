@@ -30,7 +30,10 @@ router.get("/:id", catchAsync(async (req, res) => {
     const tweet = await Tweet.findById(req.params.id).populate({
         path: "replies",
         populate: { path: "author" }
-    }).populate("author").populate("likes"); //this populate author is from the tweet model
+    }).populate("author").populate("likes").populate({
+        path: "parent",
+        populate: { path: "author" }
+    }); //this populate author is from the tweet model
     if(!tweet) {
         req.flash("error", "Cannot find that post");
         return res.redirect("/twitter/home");
@@ -44,6 +47,10 @@ router.delete("/:id", isAuthor, catchAsync(async (req, res) => {
     for (let image of tweet.images) {
         cloudinary.uploader.destroy(image);
     }
+    // Deleting also replies inside a post
+    await Tweet.deleteMany({
+        _id: { $in: tweet.replies }
+    });
     req.flash("success", "Successfully deleted your post");
     res.redirect("/twitter/home")
 }));

@@ -68,11 +68,14 @@ router.get("/:userId", isLoggedIn, catchAsync(async (req, res) => {
     try {
         const { userId } = req.params;
         const user = await User.findById(userId);
-        const tweets = await Tweet.find().where("author").equals(user._id).populate("author");
+        const tweets = await Tweet.find().where("author").equals(user._id).populate("author").populate({
+            path: "parent",
+            populate: { path: "author" }
+        });
         res.render("users/profile", { user, tweets });
     } catch (err) {
         req.flash("error", err.message);
-        res.redirect("/twitter/home")
+        res.redirect("/twitter/home");
     }
 }));
 
