@@ -26,21 +26,16 @@
 <div class="modal fade" id="tweetModal" tabindex="-1" aria-labelledby="tweetModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
+            <% if(currentUser) { %> 
             <div class="modal-header">
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form action="/tweets" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
                     <div class="mb-3">
-                        <label class="form-label" for="description">Share what's in your mind</label>
-                        <textarea class="form-control" name="tweet[description]" id="description" cols="30" rows="4"
+                        <label class="form-label" for="text">Share what's in your mind</label>
+                        <textarea class="form-control" name="tweet[text]" id="text" cols="30" rows="4"
                             placeholder="What's happening?" required></textarea>
-                        <div class="valid-feedback">Looks good!</div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label" for="location">Where are you?</label>
-                        <input class="form-control" type="text" name="tweet[location]" id="location"
-                            placeholder="location" required>
                         <div class="valid-feedback">Looks good!</div>
                     </div>
                     <div class="mb-3">
@@ -53,6 +48,14 @@
                     </div>
                 </form>
             </div>
+            <% } else { %>
+            <div class="modal-header p-2 bg-dark bg-gradient">
+                <button type="button" class="btn-close m-0 btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-dark text-warning">
+                <p class="font-monospace">You need to <a href="/login" class="text-warning fw-bold">login</a>  first. If you dont have an account register <a href="/register" class="text-warning fw-bold">here.</a></p> 
+            </div>
+            <% } %> 
         </div>
     </div>
 </div>
