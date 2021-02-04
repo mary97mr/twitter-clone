@@ -6,12 +6,14 @@ const tweetSchema = new Schema({
         url: String,
         filename : String
     }],
-    text: String,
+    text: { type: String, maxlength: 260},
     date: { type: Date, default: Date.now },
     author: { type: Schema.Types.ObjectId, ref: "User" },
     parent: { type: Schema.Types.ObjectId, ref: "Tweet", default:null },
     replies: [{ type: Schema.Types.ObjectId, ref: "Tweet" }],
-    likes: [{ type: Schema.Types.ObjectId, ref: "User" }]
+    likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    retweets: [{ type: Schema.Types.ObjectId, ref: "Tweet" }],
+    retweetStatus: {type: Schema.Types.ObjectId, ref: "Tweet", default: null}
 });
 
 // Fix it, not working

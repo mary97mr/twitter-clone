@@ -19,7 +19,8 @@ const userSchema = new Schema({
         filename: String,
     },
     followers: [{ type: Schema.Types.ObjectId, ref: "User" }],
-    following: [{ type: Schema.Types.ObjectId, ref: "User" }]
+    following: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    tweets: [{ type: Schema.Types.ObjectId, ref: "Tweet"}]
 });
 
 userSchema.plugin(passportLocalMongoose);
