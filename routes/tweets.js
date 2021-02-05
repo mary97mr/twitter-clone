@@ -3,11 +3,12 @@ const router = express.Router();
 const catchAsync = require("../utils/catchAsync");
 const Tweet = require("../models/tweet");
 const User = require("../models/user");
+const { deleteTweet } = require("../public/js/utils.js");
 const { isLoggedIn, validateTweet, isAuthor } = require("../middleware");
 
 //Multer is a middleware that divides our req.body and req.files => [{info pic1},{info pic2},{}...]
 const multer = require("multer"); 
-const { storage, cloudinary } = require("../cloudinary");
+const { storage } = require("../cloudinary");
 const upload = multer({ storage }); // Now pics will be save in our storage.
 
 // ------- Tweets Routes------//
@@ -35,6 +36,10 @@ router.get("/:id", catchAsync(async (req, res) => {
         path: "replies parent",
         populate: { path: "author retweets" }
     })
+    if(!tweet) {
+        req.flash("error", "Cannot find that post");
+        return res.redirect("/twitter/home");
+    }
     // If retweetStatus !== null, replace tweet for retweetStatus obj
     if (tweet.retweetStatus) {
         retweetedBy = tweet.author;
@@ -43,28 +48,12 @@ router.get("/:id", catchAsync(async (req, res) => {
             populate: { path: "author retweets" }
         })
     }
-    if(!tweet) {
-        req.flash("error", "Cannot find that post");
-        return res.redirect("/twitter/home");
-    }
     res.render("tweet", { tweet, retweetedBy });
 }));
 
 // DELETE ROUTE
 router.delete("/:id", isAuthor, catchAsync(async (req, res) => {
-    const tweet = await Tweet.findByIdAndDelete(req.params.id);
-    const currentUser = await User.findById(req.user._id);
-    // deleting tweet from user tweets array
-    await currentUser.tweets.pull(tweet._id);
-    await currentUser.save();
-    for (let image of tweet.images) {
-        cloudinary.uploader.destroy(image);
-    }
-    // Deleting also replies inside a post
-    await Tweet.deleteMany({
-        _id: { $in: tweet.replies },
-        _id: { $in: tweet.retweets }
-    });
+    deleteTweet(req.params.id);
     req.flash("success", "Successfully deleted your post");
     res.redirect("/twitter/home")
 }));
@@ -91,7 +80,7 @@ router.post("/:id/like", isLoggedIn, catchAsync(async (req, res, next) => {
 }));
 
 // Retweet Logic 
-router.post("/:id/retweet", isLoggedIn, catchAsync(async (req, res, next) => {
+router.post("/:id/retweet", isLoggedIn, catchAsync(async (req, res) => {
     try {
         const tweet = await Tweet.findById(req.params.id).populate("retweets");
         const currentUser = await User.findById(req.user._id);

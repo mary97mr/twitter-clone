@@ -31,18 +31,4 @@ router.post("/", isLoggedIn, upload.array("image"), validateTweet, catchAsync(as
     res.redirect(`/tweets/${tweet._id}`)
 }));
 
-// ------Delete reply route ----
-router.delete("/:replyId", isLoggedIn, isReplyAuthor, catchAsync(async (req, res) => {
-    const { id, replyId } = req.params;
-    // Remove reply from replies array
-    await Tweet.findByIdAndUpdate(id, { $pull: { replies: replyId } });
-    // Remove reply from user tweets array
-    await User.findByIdAndUpdate(req.user._id, { $pull: { tweets: replyId } });
-    // Delete tweet
-    await Tweet.findByIdAndDelete(replyId);
-    // redirect
-    req.flash("success", "You deleted your tweet");
-    res.redirect(`/tweets/${id}`)
-}));
-
 module.exports = router;

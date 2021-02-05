@@ -3,7 +3,6 @@ const router = express.Router();
 const catchAsync = require("../utils/catchAsync");
 const passport = require("passport");
 const User = require("../models/user");
-const Tweet = require("../models/tweet");
 const { isLoggedIn, isUserProfile } = require("../middleware");
 
 const multer = require("multer");
@@ -66,13 +65,8 @@ router.get("/logout", isLoggedIn, (req, res) => {
 // Profile user page
 router.get("/:userId", isLoggedIn, catchAsync(async (req, res) => {
     try {
-        const { userId } = req.params;
-        const user = await User.findById(userId);
-        const tweets = await Tweet.find().where("author").equals(user._id).populate("author").populate({
-            path: "parent",
-            populate: { path: "author" }
-        });
-        res.render("users/profile", { user, tweets });
+        const user = await User.findById(req.params.userId);
+        res.render("users/profile", { user });
     } catch (err) {
         req.flash("error", err.message);
         res.redirect("/twitter/home");

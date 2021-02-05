@@ -39,13 +39,21 @@
             </div>
             <!-- Displaying tweets of user -->
             <div class="card">
-                <% for(let tweet of tweets) { %>
+                <% for(let tweet of user.tweets) { %>
+                    <% if(tweet.retweetStatus) { %>
+                        <% retweetedBy = tweet.author;
+                        tweet = tweet.retweetStatus; %>    
+                    <% } else { retweetedBy = null } %>
                 <div class="card-body">
+                    <%= tweet.retweetStatus %> 
                     <div class="row">
                         <div class="col-2">
                             <img class="rounded-circle me-auto p-0 m-1" src="<%= tweet.author.image.url %>" width="60 px" height="60 px">
                         </div>
                         <div class="col-10">
+                            <% if(retweetedBy) { %>
+                            <div class="ms-1 mb-2 fw-bold"><i class="fas fa-retweet"></i> You retweeted </div>
+                            <% } %> 
                             <div class="my-auto ms-1 d-flex">
                                 <p class="card-title m-0">
                                     <a href="/<%=tweet.author._id %>" class="text-decoration-none text-dark"><b><%= tweet.author.name %></b></a>
@@ -59,7 +67,7 @@
                             <div>
                                 <!-- Displaying replying to in post with parents  -->
                                 <% if(tweet.parent) { %> 
-                                <p>Replying to <a href="/<%=tweet.parent._id %>">@<%= 
+                                <p>Replying to <a href="/<%=tweet.parent.author._id %>">@<%= 
                                 tweet.parent.author.username %></a></p>
                                 <% } %> 
                                 <p> <%= tweet.text %> </p>
@@ -98,7 +106,13 @@
                                 <%= (tweet.replies.length) ? tweet.replies.length : "" %> 
                                 </button>
                                 <!-- Retweet button -->
-                                <button class="btn btn-retweet"><i class="fas fa-retweet"></i> 25</button>
+                                <form action="/tweets/<%= tweet._id %>/retweet" method="POST">
+                                    <% if(currentUser && tweet.retweets.some(retweet => { return retweet.author.equals(currentUser._id)})) {  %>
+                                    <button class="btn btn-retweet retweeted"><i class="fas fa-retweet"></i></button>
+                                    <% } else { %>
+                                    <button class="btn btn-retweet"><i class="fas fa-retweet"></i></button>
+                                    <% } %>
+                                </form>
                                 <!-- Like buttons -->
                                 <form action="/tweets/<%= tweet._id %>/like" method="POST">
                                     <% if(currentUser && tweet.likes.some(like => { return like.equals(currentUser._id)})) { %>
