@@ -1,7 +1,7 @@
 module.exports = (first = "", second = "author", third ="author") => {
     return function(next) {
         this.populate({
-            path: "tweets",
+            path: "tweets following",
             populate: {
                 path: first,
                 populate: {

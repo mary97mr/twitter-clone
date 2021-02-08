@@ -27,6 +27,6 @@ const userSchema = new Schema({
 // Passport-Local Mongoose will add a username, hash and salt field. Also adds some methods to your Schema.
 userSchema.plugin(passportLocalMongoose);
 userSchema
-    .pre("findOne", Populate("author parent retweetStatus retweets", "author parent retweets"))
+    .pre("findOne", Populate("author parent retweetStatus retweets tweets", "author parent retweets"))
 
 module.exports = mongoose.model("User", userSchema)
