@@ -6,30 +6,21 @@ const User = require("../models/user");
 
 // Route that displays tweets of current user and also the one of their following
 router.get("/twitter/home", isLoggedIn, catchAsync(async (req, res) => {
-    const user = await User.findById(req.user._id);
-    const timeline = [];
-    addTweetTimeline(user.tweets, timeline);
-    for (let following of user.following) {
-        addTweetTimeline(following.tweets, timeline);
-    }
+    const user = await User.findById(req.user._id).populate({
+        path: "timeline",
+        populate: {
+            path: "author parent retweetStatus retweets",
+            populate: {
+                path: "author parent retweets",
+                populate: { path: "author" }
+            }
+        }
+    });
+    const timeline = user.timeline;
     timeline.sort(function (a, b) {
         return new Date(b.date) - new Date(a.date)
     });
-    console.log(timeline)
-    res.render("timeline", { timeline });
+    res.render("timeline", { tweets: timeline });
 }));
-
-const addTweetTimeline = (arr, timeline) => {
-    for (tweet of arr) {
-        const tweetFound = timeline.some(item => {
-            return item._id.equals(tweet._id)
-        });
-        if (!tweetFound) {
-            timeline.push(tweet);
-        } else {
-            timeline.pull(tweet._id)
-        }
-    }
-}
 
 module.exports = router;

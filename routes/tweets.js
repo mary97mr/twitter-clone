@@ -3,7 +3,7 @@ const router = express.Router();
 const catchAsync = require("../utils/catchAsync");
 const Tweet = require("../models/tweet");
 const User = require("../models/user");
-const { deleteTweet } = require("../public/js/utils.js");
+const { deleteTweet, addTimeline } = require("../public/js/utils.js");
 const { isLoggedIn, validateTweet, isAuthor } = require("../middleware");
 
 //Multer is a middleware that divides our req.body and req.files => [{info pic1},{info pic2},{}...]
@@ -16,12 +16,17 @@ const upload = multer({ storage }); // Now pics will be save in our storage.
 // CREATE ROUTE
 router.post("/", isLoggedIn, upload.array("image"), validateTweet, catchAsync(async (req, res, next) => {
     const tweet = new Tweet(req.body.tweet);
-    const currentUser = await User.findById(req.user._id);
+    const currentUser = await User.findById(req.user._id).populate({
+        path: "followers",
+        populate: { path: "timeline" }
+    });
     // The images are store in req.files. In order we define our tweet model, we need to pass them also the pictures.
     // As req.files is an array we loop throught it. Of every file we create and obj with the params needed.
     tweet.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
     tweet.author = currentUser._id; // Now every post created will have associate an author.
     await tweet.save();
+    // Adding tweet to timeline of followers
+    addTimeline(currentUser, tweet);
     // Save the tweet created in user tweets array
     currentUser.tweets.unshift(tweet);
     currentUser.save();
@@ -83,7 +88,10 @@ router.post("/:id/like", isLoggedIn, catchAsync(async (req, res, next) => {
 router.post("/:id/retweet", isLoggedIn, catchAsync(async (req, res) => {
     try {
         const tweet = await Tweet.findById(req.params.id).populate("retweets");
-        const currentUser = await User.findById(req.user._id);
+        const currentUser = await User.findById(req.user._id).populate({
+            path: "followers",
+            populate: { path: "timeline" }
+        });
         // find retweet obj by the author
         const retweet = await tweet.retweets.find(retweet => {
             return retweet.author.equals(currentUser._id)
@@ -92,6 +100,11 @@ router.post("/:id/retweet", isLoggedIn, catchAsync(async (req, res) => {
             // remove from user.tweets and tweet.retweets array
             await currentUser.tweets.pull(retweet._id);
             await tweet.retweets.pull(retweet._id);
+            await currentUser.timeline.pull(retweet._id);
+            for (let follower of currentUser.followers) {
+                follower.timeline.pull(retweet._id);
+                follower.save();
+            }
             // Delete 
             await Tweet.findByIdAndDelete(retweet._id);
             req.flash("success", "no retweet")
@@ -101,6 +114,7 @@ router.post("/:id/retweet", isLoggedIn, catchAsync(async (req, res) => {
                 retweetStatus: tweet,
             });
             await newRetweet.save();
+            addTimeline(currentUser, newRetweet);
             await currentUser.tweets.unshift(newRetweet);
             await tweet.retweets.unshift(newRetweet);
             req.flash("success", "retweet");

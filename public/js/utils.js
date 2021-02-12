@@ -11,7 +11,13 @@ async function deleteTweet(tweetId) {
             const parentTweet = await Tweet.findByIdAndUpdate(parentId, { $pull: { replies: tweetId } });
             await parentTweet.save();
         }
-        const user = await User.findByIdAndUpdate(tweet.author._id, { $pull: { tweets: tweetId } })
+        const user = await User.findByIdAndUpdate(tweet.author._id);
+        await user.tweets.pull(tweetId);
+        await user.timeline.pull(tweetId);
+        for (let follower of user.followers) {
+            follower.timeline.pull(tweetId);
+            follower.save();
+        }
         await user.save();
         for (let retweet of tweet.retweets) {
             const userRetweet = await User.findByIdAndUpdate(retweet.author._id, { $pull: { tweets: retweet._id } });
@@ -21,7 +27,7 @@ async function deleteTweet(tweetId) {
             cloudinary.uploader.destroy(image);
         }
         for (let reply of tweet.replies) {
-            deleteTweet(reply._id)
+            deleteTweet(reply._id);
         }
         await Tweet.findByIdAndDelete(tweetId);
         // // Deleting also replies inside a post
@@ -34,4 +40,11 @@ async function deleteTweet(tweetId) {
     }
 }
 
-module.exports = { deleteTweet }
+const addTimeline = (currentUser, tweet) => {
+    currentUser.timeline.unshift(tweet);
+    for (let follower of currentUser.followers) {
+        follower.timeline.unshift(tweet);
+        follower.save();    
+    }
+}
+module.exports = { deleteTweet, addTimeline }

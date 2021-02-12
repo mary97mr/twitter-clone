@@ -65,8 +65,18 @@ router.get("/logout", isLoggedIn, (req, res) => {
 // Profile user page
 router.get("/:userId", isLoggedIn, catchAsync(async (req, res) => {
     try {
-        const user = await User.findById(req.params.userId);
-        res.render("users/profile", { user });
+        const user = await User.findById(req.params.userId).populate({
+            path: "tweets",
+            populate: {
+                path: "author parent retweetStatus retweets",
+                populate: {
+                    path: "author parent retweets",
+                    populate: { path: "author" }
+                }
+            }
+        });
+        const tweets = user.tweets;
+        res.render("users/profile", { user, tweets });
     } catch (err) {
         req.flash("error", err.message);
         res.redirect("/twitter/home");
@@ -90,9 +100,8 @@ router.put("/:userId", isLoggedIn, isUserProfile, upload.single("image"),catchAs
 // Following user logic
 router.get("/follow/:userId", isLoggedIn, catchAsync(async (req, res) => {
     try {
-        const { userId } = req.params;
-        const currentUser = req.user;
-        const user = await User.findById(userId);
+        const currentUser = await User.findById(req.user._id).populate("timeline");
+        const user = await User.findById(req.params.userId).populate("followers tweets");
         // Checks if currentuser is in user.followers array
         const follower = user.followers.some(follower => { return follower.equals(currentUser._id) });
         // Checks if user is in current user following array
@@ -100,11 +109,15 @@ router.get("/follow/:userId", isLoggedIn, catchAsync(async (req, res) => {
 
         if (!follower && !following) { //not found follower in user followers
             user.followers.push(currentUser); // push currentUser to user followers
-            req.user.following.push(user); //push user to currentUser following
+            currentUser.following.push(user); //push user to currentUser following
+            currentUser.timeline.push(...user.tweets);
             req.flash("success", `You're now following to ${user.username}`)
         } else {
-            user.followers.pull(currentUser._id) //user found, remove currentUser from user followers
-            req.user.following.pull(user._id) //remove user from currentUser following
+            user.followers.pull(currentUser._id) //user found, remove currentUser 
+            currentUser.following.pull(user._id) //remove user from currentUser 
+            for (let tweet of user.tweets) {
+                currentUser.timeline.pull(tweet._id)
+            }
             req.flash("error", `Unfollowed to ${user.username}`)
         }
         user.save();
