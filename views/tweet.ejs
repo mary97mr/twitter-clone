@@ -87,7 +87,9 @@
                         <% } %>
                     </form>
                     <!-- Share button -->
-                    <button class="btn btn-share-reply" onclick="copyTweetToClipboard('<%= tweet._id %>')"><i class="fas fa-share-alt"></i></button>
+                    <form action="/tweets/<%= tweet._id %>/share" method="POST">
+                        <button class="btn btn-share-reply" onclick="copyTweet('<%= tweet._id %>')"><i class="fas fa-share-alt"></i></button>
+                    </form>
                     <% if(currentUser && tweet.author.equals(currentUser._id)) { %>
                     <!-- Delete button -->
                     <form action="/tweets/<%= tweet._id %>?_method=DELETE" method="POST">
@@ -173,7 +175,9 @@
                                 <% } %> 
                             </form>
                             <!-- Share Button -->
-                            <button class="btn btn-share-reply" onclick="copyTweetToClipboard('<%= reply._id %>')"><i class="fas fa-share-alt"></i></button>
+                            <form action="/tweets/<%= reply._id %>/share" method="POST">
+                                <button class="btn btn-share-reply" onclick="copyTweet('<%= reply._id %>')"><i class="fas fa-share-alt"></i></button>
+                            </form>
                             <% if(currentUser && reply.author.equals(currentUser._id)) { %>
                             <!-- Delete reply button-->
                             <form action="/tweets/<%=reply._id %>?_method=DELETE" method="POST">

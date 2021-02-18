@@ -16,13 +16,4 @@ const tweetSchema = new Schema({
     retweetStatus: {type: Schema.Types.ObjectId, ref: "Tweet", default: null}
 });
 
-// Fix it, not working
-// tweetSchema.post("findOneAndDelete", async function(doc) {
-//     if(doc) {
-//         await this.deleteMany({
-//             _id: { $in : doc.replies }
-//         });
-//     }
-// });
-
 module.exports = mongoose.model("Tweet", tweetSchema);

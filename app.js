@@ -14,7 +14,6 @@ const session = require("express-session");
 const ExpressError = require("./utils/ExpressError");
 const tweetRoutes = require("./routes/tweets");
 const userRoutes = require("./routes/users");
-const replyRoutes = require("./routes/replies");
 const timeLineRoute = require("./routes/timeline");
 const User = require("./models/user");
 const passport = require("passport");
@@ -55,10 +54,10 @@ const sessionConfig = {
 app.use(session(sessionConfig));
 
 // Passport Config
-app.use(passport.initialize());  // middleware is required to initialize Passport
-app.use(passport.session());  // If your application uses persistent login sessions
-passport.use(new LocalStrategy(User.authenticate())); // use static authenticate method of model in LocalStrategy
-passport.serializeUser(User.serializeUser()); // use static serialize and deserialize of model for passport session support
+app.use(passport.initialize()); 
+app.use(passport.session()); 
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 // flash and middleware
@@ -71,14 +70,13 @@ app.use((req, res, next) => {
     next();
 });
 
-// Home page Route
+// Landing page Route
 app.get("/", isLoggedOut, (req, res) => {
     res.render("home");
 });
 
 // Using the routes
 app.use("/tweets", tweetRoutes);
-app.use("/tweets/:id", replyRoutes);
 app.use("/", userRoutes);
 app.use("/", timeLineRoute);
 
@@ -93,7 +91,6 @@ app.use((err, req, res, next) => {
     res.status(statusCode).render("error", { err });
 });
 
-// Listen Route
 app.listen(3000, () => {
     console.log("twitter running on port 3000");
 });

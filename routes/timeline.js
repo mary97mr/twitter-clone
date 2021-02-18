@@ -4,7 +4,7 @@ const catchAsync = require("../utils/catchAsync");
 const { isLoggedIn, searching } = require("../middleware");
 const User = require("../models/user");
 
-// Route that displays tweets of current user and also the one of their following
+// Route that displays timeline of current
 router.get("/twitter/home", isLoggedIn, searching, catchAsync(async (req, res) => {
     const user = await User.findById(req.user._id).populate({
         path: "timeline",

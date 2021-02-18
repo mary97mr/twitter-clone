@@ -17,6 +17,4 @@ const storage = new CloudinaryStorage({
     }
 });
 
-//Export cloudinary already configured with our credentials.
-// Export storage created
 module.exports = { cloudinary, storage }

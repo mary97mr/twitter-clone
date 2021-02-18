@@ -24,7 +24,7 @@ async function deleteTweet(tweetId) {
         await userRetweet.save();
     }
     for (let image of tweet.images) {
-        cloudinary.uploader.destroy(image);
+        cloudinary.uploader.destroy(image.filename);
     }
     for (let reply of tweet.replies) {
         deleteTweet(reply._id);

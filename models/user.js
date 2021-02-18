@@ -29,7 +29,6 @@ const userSchema = new Schema({
     timeline: [{ type: Schema.Types.ObjectId, ref: "Tweet"}]
 });
 
-// Passport-Local Mongoose will add a username, hash and salt field. Also adds some methods to your Schema.
 userSchema.plugin(passportLocalMongoose);
 
 module.exports = mongoose.model("User", userSchema)

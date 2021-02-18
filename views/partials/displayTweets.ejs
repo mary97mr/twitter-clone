@@ -53,7 +53,7 @@
                 <% } %> 
             </div>
             <% } %>
-            <!-- Displaying button of posts -->
+            <!-- Displaying buttons -->
             <div class="d-flex justify-content-between">
                 <!-- reply button modal -->
                 <button type="button" class="btn btn-share-reply" data-bs-toggle="modal" data-bs-target="#replyModal<%= tweet._id %>"><i class="far fa-comment"></i>
@@ -76,7 +76,7 @@
                     <% } %> 
                 </form>
                 <!-- share button -->
-                <form action="/tweets/<%= tweet._id %>/copy" method="POST">
+                <form action="/tweets/<%= tweet._id %>/share" method="POST">
                     <button class="btn btn-share-reply" onclick="copyTweet('<%=tweet._id%>')"><i class="fas fa-share-alt"></i></button>
                 </form>
                 <!-- Delete button -->
@@ -90,6 +90,7 @@
     </div>
 </div>
 <hr class="my-0">
+
 <!-- DISPLAY MODAL REPLY -->
 <div class="modal fade" id="replyModal<%= tweet._id %>" tabindex="-1" aria-labelledby="replyModalLabel" aria-hidden="true">
     <div class="modal-dialog">

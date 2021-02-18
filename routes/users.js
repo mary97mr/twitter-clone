@@ -9,29 +9,27 @@ const multer = require("multer");
 const { storage, cloudinary } = require("../cloudinary");
 const upload = multer({ storage });
 
-//_____ Register form
+// Display Register form
 router.get("/register", isLoggedOut, (req, res) => {
     res.render("users/register");
 });
+
 // Register Logic
 router.post("/register", upload.single("image"), catchAsync(async (req, res, next) => {
-    // First we define the inputs stored in req.body
-    // We create a new user with the inputs defined but no the password.
-    // Use register(new user, password), method that comes from passport-local-mongoose(in user model)
     try {
         const { name, username, email, password } = req.body;
         const user = new User({ name, username, email });
         if (req.file) {
             const { path, filename } = req.file;
             user.image = { url: path, filename: filename };
-        } else { //Adding a default image if not image added.
+        } else { // Adding a default image if not image added.
             user.image = {
                 url: "https://res.cloudinary.com/mary97mr/image/upload/v1611525637/Twitter/default-picture_vv9tul.png",
                 filename: "Twitter/default-picture_vv9tul.png"
             }
         }
         const createdUser = await User.register(user, password);
-        // After registering a user, we want user already login.
+        // After registering a user, user already login.
         req.login(createdUser, err => {
             if (err) return next(err)
             req.flash("success", "Welcome to social media.")
@@ -43,10 +41,11 @@ router.post("/register", upload.single("image"), catchAsync(async (req, res, nex
     }
 }));
 
-//______Login form
+//Display Login form
 router.get("/login", isLoggedOut, (req, res) => {
     res.render("users/login");
 });
+
 // Login Logic
 router.post("/login", passport.authenticate("local", { failureFlash: true, failureRedirect: "/login" }), async (req, res) => {
     // To login we use a method from passport, so we need to require it.
@@ -55,14 +54,14 @@ router.post("/login", passport.authenticate("local", { failureFlash: true, failu
     res.redirect("/twitter/home/");
 });
 
-//_____Logout logic
+// Logout logic
 router.get("/logout", (req, res) => {
     req.logout();
     req.flash("success", "Come back Soon");
     res.redirect("/login");
 });
 
-// Profile user page
+// Display User Profile 
 router.get("/users/:username", isLoggedIn, searching, catchAsync(async (req, res) => {
     try {
         const { username } = req.params;
@@ -87,7 +86,7 @@ router.get("/users/:username", isLoggedIn, searching, catchAsync(async (req, res
     }
 }));
 
-// Update profile user page
+// Update User Profile 
 router.put("/users/:username", isLoggedIn, isUserProfile, upload.single("image"), catchAsync(async (req, res) => {
     const userUpdated = await User.findOneAndUpdate({ username :  req.params.username}, req.body.user);
     if (req.file) {
@@ -110,25 +109,25 @@ router.get("/follow/:userId", isLoggedIn, catchAsync(async (req, res) => {
         // Checks if user is in current user following array
         const following = currentUser.following.some(following => { return following.equals(user._id) });
 
-        if (!follower && !following) { //not found follower in user followers
-            user.followers.push(currentUser); // push currentUser to user followers
-            currentUser.following.push(user); //push user to currentUser following
+        if (!follower && !following) {
+            user.followers.push(currentUser); 
+            currentUser.following.push(user); 
             currentUser.timeline.push(...user.tweets);
-            req.flash("success", `You're now following to ${user.username}`)
+            req.flash("success", `You're now following to ${user.username}`);
         } else {
-            user.followers.pull(currentUser._id) //user found, remove currentUser 
-            currentUser.following.pull(user._id) //remove user from currentUser 
+            user.followers.pull(currentUser._id);
+            currentUser.following.pull(user._id);
             for (let tweet of user.tweets) {
-                currentUser.timeline.pull(tweet._id)
+                currentUser.timeline.pull(tweet._id);
             }
-            req.flash("error", `Unfollowed to ${user.username}`)
+            req.flash("error", `Unfollowed to ${user.username}`);
         }
         user.save();
-        currentUser.save()
-        res.redirect("back")
+        currentUser.save();
+        res.redirect("back");
     } catch (err) {
         req.flash("error", err.message);
-        res.redirect("back")
+        res.redirect("back");
     }
 }));
 
