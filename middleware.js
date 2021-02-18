@@ -12,35 +12,55 @@ module.exports.isLoggedIn = (req, res, next) => {
     next();
 }
 
-module.exports.isAuthor = async (req, res, next) => {
-    //We need to find the post first 
-    const tweet = await Tweet.findById(req.params.id);
-    // Compare if the author and the user loggin is the same
-    if (!tweet.author.equals(req.user._id)) {
-        req.flash("error", "You dont have permission to do that.")
-        return res.redirect(`/tweets/${tweet._id}`);
+module.exports.isLoggedOut = (req, res, next) => {
+    if (req.isAuthenticated()) {
+        return res.redirect("/twitter/home"); //we return the redirect in order doesnt run next().
     }
     next();
 }
 
-module.exports.isReplyAuthor = async (req, res, next) => {
-    const tweet = await Tweet.findById(req.params.replyId);
-    if (!tweet.author.equals(req.user._id)) {
+module.exports.isAuthor = async (req, res, next) => {
+    //We need to find the post first 
+    const tweet = await Tweet.findById(req.params.id);
+    // Compare if the author and the user loggin is the same
+    if (!tweet.author._id.equals(req.user._id)) {
         req.flash("error", "You dont have permission to do that.")
-        return res.redirect("back")
+        return res.redirect("back");
     }
     next();
 }
 
 module.exports.isUserProfile = async (req, res, next) => {
     //We need to find the user first 
-    const user = await User.findById(req.params.userId);
+    const user = await User.findOne({ username: req.params.username });
     // Compare if the user id and the user loggin is the same
     if (!user._id.equals(req.user._id)) {
         req.flash("error", "You dont have permission to do that.")
         return res.redirect("back");
     }
     next();
+}
+
+module.exports.searching = async (req, res, next) => {
+    if (req.query.search) {
+        const regex = new RegExp(escapeRegex(req.query.search), 'gi')
+        const userSearch = await User.findOne({ username: regex }).populate({
+            path: "tweets followers following",
+            populate: {
+                path: "author parent retweetStatus retweets",
+                populate: {
+                    path: "author parent retweets",
+                    populate: { path: "author" }
+                }
+            }
+        });
+        if (!userSearch) {
+            req.flash("error", "Couldnt find user, try again.");
+            return res.redirect("/twitter/home");
+        }
+        return res.render("users/profile", { user: userSearch, tweets: userSearch.tweets });
+    }
+    next()
 }
 
 //  We move validations in middleware file.
@@ -53,4 +73,9 @@ module.exports.validateTweet = (req, res, next) => {
     } else {
         next();
     }
+}
+
+// Define escapeRegex function for search feature
+function escapeRegex(text) {
+    return text.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 }

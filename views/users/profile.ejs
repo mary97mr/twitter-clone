@@ -1,27 +1,30 @@
 <% layout("layouts/boilerplate") %>
 <div class="container">
     <div class="row">
-        <div class="col-md-10 offset-md-1 col-xl-8 offset-xl-2">
+        <div class="col-md-10 offset-md-1 col-xl-8 offset-xl-2 mb-3">
             <!-- Profile Info -->
             <div class="card shadow rounded">
-                <div class="card-header fw-bold text-capitalize"> <%= user.name %> </div>
+                <div class="card-header fw-bold text-capitalize">
+                    <a class="my-auto" onclick="window.history.go(-1)"><i class="fas fa-arrow-left me-3"></i></a>
+                    <span class="fw-bold fs-5"><%= user.name %></span>
+                </div>
                 <div class="card-body">
                     <div class="d-flex justify-content-between mb-3">
                         <img src="<%= user.image.url %>" alt="" class="img-thumbnail rounded-circle" id="img-profile">
                         <!-- Button edit Profile modal -->
                         <% if(currentUser && user._id.equals(currentUser._id)) { %> 
-                        <div class="mt-auto"><button type="button" class="btn btn-outline-primary rounded-pill fw-bold" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit profile</button></div>
+                        <div class="mt-auto"><button type="button" class="btn btn-outline-primary fw-bold" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit profile</button></div>
                         <% } else { %>
                             <% if (currentUser && user.followers.some((follower) => { return follower.equals(currentUser._id) })) { %>
-                            <div class="mt-auto"><a href="/follow/<%= user._id %>" class="btn btn-primary rounded-pill fw-bold" id="btn-unfollow">Following</a></div>
+                            <div class="mt-auto"><a href="/follow/<%= user._id %>" class="btn btn-primary fw-bold" id="btn-unfollow">Following</a></div>
                             <% } else { %>
-                            <div class="mt-auto"><a href="/follow/<%= user._id %>" class="btn btn-outline-primary rounded-pill fw-bold">Follow</a></div>
+                            <div class="mt-auto"><a href="/follow/<%= user._id %>" class="btn btn-outline-primary fw-bold">Follow</a></div>
                             <% } %> 
                         <% } %> 
                     </div>
                     <div class="mb-2">
                         <h5 class="text-capitalize fw-bold"> <%= user.name %> </h5>
-                        @<%= user.username %>
+                        <span class="text-muted">@<%= user.username %></span>
                     </div>
                     <div class="mb-2">
                         <p><%= user.biography %></p>
@@ -30,31 +33,33 @@
                         <% } %> 
                     </div>
                     <div class="mb-3 d-flex">
-                        <p class="fw-bold me-1"><%= user.followers.length %> </p>
-                        <span class="text-muted me-3">Followers</span>
-                        <p class="fw-bold me-1"><%= user.following.length %></p>
-                        <span class="text-muted me-3">Following</span>                          
+                        <!-- Button trigger Followers modal -->
+                        <a class="text-decoration-none me-1 text-dark fw-bold" type="button" data-bs-toggle="modal" data-bs-target="#followersModal"><%= user.followers.length %> <span class="text-muted me-3">Followers</span></a>
+                        <!-- Button trigger following modal -->
+                        <a class="text-decoration-none me-1 text-dark fw-bold" type="button" data-bs-toggle="modal" data-bs-target="#followersModal"><%= user.following.length %> <span class="text-muted me-3">Following</span></a>
                     </div>
                 </div>
             </div>
             <!-- Displaying tweets of user -->
+            <% if(user.tweets.length) {%> 
             <div class="card">
                 <%- include("../partials/displayTweets") %> 
             </div>
+            <% } %> 
         </div>
     </div>
 </div>
 
 <!-- Edit Profile Modal -->
 <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModal" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title fw-bold" id="editProfileModal">Edit Profile</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="/<%= user._id%>?_method=PUT" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
+                <form action="/users/<%= user.username%>?_method=PUT" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label for="name" class="form-label">Name</label>
                         <input class="form-control" type="text" name="user[name]" id="name" value="<%= user.name %>" placeholder="john" required>
@@ -76,9 +81,82 @@
                         <div class="invalid-feedback fw-bold">You must add profile picture.</div>
                     </div>
                     <div class="modal-footer ">
-                        <button type="submit" class="btn btn-primary rounded-pill fw-bold">Save changes</button>
+                        <button type="submit" class="btn btn-primary fw-bold">Save changes</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Followers Modal -->
+<div class="modal fade" id="followersModal" tabindex="-1" aria-labelledby="followersModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header p-2">
+                <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <button class="nav-link active" id="nav-followers-tab" data-bs-toggle="tab" data-bs-target="#nav-followers" type="button" role="tab" aria-controls="nav-followers" aria-selected="true">Followers</button>
+                        <button class="nav-link" id="nav-following-tab" data-bs-toggle="tab" data-bs-target="#nav-following" type="button" role="tab" aria-controls="nav-following" aria-selected="false">Following</button>
+                    </div>
+                </nav>
+                <div class="tab-content" id="nav-tabContent">
+                    <div class="tab-pane fade show active" id="nav-followers" role="tabpanel" aria-labelledby="nav-followers-tab">
+                        <% if(user.followers.length) { %>
+                        <ul class="list-group list-group-flush">
+                            <% for(let follower of user.followers) { %>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <div class="d-flex">
+                                    <img src="<%= follower.image.url %>" class="rounded-circle" width="60px" height="60px">
+                                    <div class="ms-3">
+                                        <a href="/users/<%= follower.username %>" class="text-capitalize fw-bold mb-0 text-decoration-none text-dark"><%= follower.name %></a>
+                                        <p class="text-muted">@<%= follower.username %> </p>
+                                    </div>
+                                </div>
+                                <% if(currentUser && !follower._id.equals(currentUser._id)) { %> 
+                                <% if (follower.followers.some((item) => { return item._id.equals(currentUser._id) })) { %>
+                                <div><a href="/follow/<%= follower._id %>" class="btn btn-primary fw-bold" id="btn-unfollow">Following</a></div>
+                                <% } else { %>
+                                <div><a href="/follow/<%= follower._id %>" class="btn btn-outline-primary fw-bold">Follow</a></div>
+                                <% } %> 
+                                <% } %> 
+                            </li>
+                            <% } %> 
+                        </ul>
+                        <% } else { %>
+                            <p class="text-muted text-center m-3">No followers yet.</p>
+                        <% } %> 
+                    </div>
+                    <div class="tab-pane fade" id="nav-following" role="tabpanel" aria-labelledby="nav-following-tab">
+                        <% if(user.following.length) { %>
+                        <ul class="list-group list-group-flush">
+                            <% for(let following of user.following) { %>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <div class="d-flex">
+                                    <img src="<%= following.image.url %>" class="rounded-circle" width="60px" height="60px">
+                                    <div class="ms-3">
+                                        <a href="/users/<%= following.username %>" class="text-capitalize fw-bold mb-0 text-decoration-none text-dark"><%= following.name %></a>
+                                        <p class="text-muted">@<%= following.username %> </p>
+                                    </div>
+                                </div>
+                                <% if(currentUser && !following._id.equals(currentUser._id)) { %> 
+                                <% if (following.followers.some((item) => { return item._id.equals(currentUser._id) })) { %>
+                                <div><a href="/follow/<%= following._id %>" class="btn btn-primary fw-bold" id="btn-unfollow">Following</a></div>
+                                <% } else { %>
+                                <div><a href="/follow/<%= following._id %>" class="btn btn-outline-primary fw-bold">Follow</a></div>
+                                <% } %> 
+                                <% } %> 
+                            </li>
+                            <% } %> 
+                        </ul>
+                        <% } else { %>
+                            <p class="text-muted text-center m-3">No Following yet.</p>
+                        <% } %> 
+                    </div>
+                </div>
             </div>
         </div>
     </div>

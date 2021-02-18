@@ -1,35 +1,35 @@
 <% layout("layouts/boilerplate") %>
-    <div class="row">
-        <div class="col-md-4"></div>
-        <div class="col-md-8 col-lg-6">
-            <h4 class="card card-header">Home</h4>
-            <div class="card shadow rounded">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-2">
-                            <img class="img-fluid rounded-circle mb-4" src="<%= currentUser.image.url %>" alt="">
-                        </div>
-                        <div class="col-10">
-                            <form action="/tweets" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
-                                <div class="mb-3">
-                                    <textarea class="form-control" name="tweet[text]" id="text" cols="30" rows="4" placeholder="What's happening?" required autofocus></textarea>
-                                    <div class="valid-feedback">Looks good!</div>
-                                </div>
-                                <div class="mb-3">
-                                    <input class="form-control" type="file" id="image" name="image" multiple>
-                                </div>
-                                <div class="d-flex justify-content-end">
-                                    <button type="submit" class="btn btn-primary rounded-pill">Tweet</button>
-                                </div>
-                            </form>
-                        </div>
+<div class="row">
+    <div class="col-md-8 offset-md-2 col-xl-6 offset-xl-3 mb-3">
+        <h4 class="card card-header">Home</h4>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-2">
+                        <img class="img-fluid rounded-circle mb-4" src="<%= currentUser.image.url %>" alt="">
+                    </div>
+                    <div class="col-10">
+                        <form action="/tweets" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <textarea class="form-control" name="tweet[text]" id="text" cols="30" rows="4" placeholder="What's happening?" autofocus maxlength="260" required></textarea>
+                                <div class="valid-feedback">Looks good!</div>
+                            </div>
+                            <div class="mb-3">
+                                <input class="form-control" type="file" id="image" name="image" multiple>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button type="submit" class="btn btn-primary px-4">Tweet</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
-            <!-- Displaying tweets -->
-            <div class="card">
-                <%- include("./partials/displayTweets") %>
-            </div>
         </div>
-        <div class="col-lg-2"></div>
+        <!-- Displaying tweets -->
+        <% if(currentUser.timeline.length) {%> 
+        <div class="card">
+            <%- include("./partials/displayTweets") %>
+        </div>
+        <% } %> 
     </div>
+</div>

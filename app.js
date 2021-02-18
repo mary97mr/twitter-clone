@@ -19,6 +19,8 @@ const timeLineRoute = require("./routes/timeline");
 const User = require("./models/user");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
+const { countButton } = require("./public/js/utils");
+const { isLoggedOut } = require("./middleware");
 
 mongoose.connect("mongodb://localhost:27017/twitter", {
     useCreateIndex: true,
@@ -65,11 +67,12 @@ app.use((req, res, next) => {
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
     res.locals.currentUser = req.user;
+    res.locals.countButton = countButton;
     next();
 });
 
 // Home page Route
-app.get("/", (req, res) => {
+app.get("/", isLoggedOut, (req, res) => {
     res.render("home");
 });
 

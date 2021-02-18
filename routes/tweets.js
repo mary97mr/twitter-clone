@@ -4,7 +4,7 @@ const catchAsync = require("../utils/catchAsync");
 const Tweet = require("../models/tweet");
 const User = require("../models/user");
 const { deleteTweet, addTimeline } = require("../public/js/utils.js");
-const { isLoggedIn, validateTweet, isAuthor } = require("../middleware");
+const { isLoggedIn, validateTweet, isAuthor, searching } = require("../middleware");
 
 //Multer is a middleware that divides our req.body and req.files => [{info pic1},{info pic2},{}...]
 const multer = require("multer"); 
@@ -35,25 +35,16 @@ router.post("/", isLoggedIn, upload.array("image"), validateTweet, catchAsync(as
 }));
 
 // SHOW ROUTE
-router.get("/:id", catchAsync(async (req, res) => {
-    let retweetedBy = null;
+router.get("/:id", isLoggedIn, searching, catchAsync(async (req, res) => {
     let tweet = await Tweet.findById(req.params.id).populate("author retweets").populate({
-        path: "replies parent",
+        path: "replies parent retweetStatus",
         populate: { path: "author retweets" }
     })
     if(!tweet) {
         req.flash("error", "Cannot find that post");
         return res.redirect("/twitter/home");
     }
-    // If retweetStatus !== null, replace tweet for retweetStatus obj
-    if (tweet.retweetStatus) {
-        retweetedBy = tweet.author;
-        tweet = await Tweet.findById(tweet.retweetStatus._id).populate("author retweets").populate({
-            path: "replies parent",
-            populate: { path: "author retweets" }
-        })
-    }
-    res.render("tweet", { tweet, retweetedBy });
+    res.render("tweet", { tweet });
 }));
 
 // DELETE ROUTE
@@ -64,20 +55,18 @@ router.delete("/:id", isAuthor, catchAsync(async (req, res) => {
 }));
 
 // Likes Logic
-router.post("/:id/like", isLoggedIn, catchAsync(async (req, res, next) => {
+router.post("/:id/like", isLoggedIn, catchAsync(async (req, res) => {
     try {
         const tweet = await Tweet.findById(req.params.id);
         // Checks if currentuser is in tweet.likes array
         const userLike = await tweet.likes.some(like => { return like.equals(req.user._id) })
         if (userLike) {
             tweet.likes.pull(req.user._id);
-            req.flash("success", "Unlike")
         } else {
             tweet.likes.push(req.user);
-            req.flash("success", "You liked the post")
         }
         await tweet.save();
-        return res.redirect("back")
+        res.redirect("back")
     } catch (err) {
         req.flash("error", err.message);
         res.redirect("back");
@@ -107,7 +96,6 @@ router.post("/:id/retweet", isLoggedIn, catchAsync(async (req, res) => {
             }
             // Delete 
             await Tweet.findByIdAndDelete(retweet._id);
-            req.flash("success", "no retweet")
         } else {
             const newRetweet = new Tweet({
                 author: currentUser._id,
@@ -117,7 +105,6 @@ router.post("/:id/retweet", isLoggedIn, catchAsync(async (req, res) => {
             addTimeline(currentUser, newRetweet);
             await currentUser.tweets.unshift(newRetweet);
             await tweet.retweets.unshift(newRetweet);
-            req.flash("success", "retweet");
         }
         await currentUser.save();
         await tweet.save();
@@ -126,6 +113,12 @@ router.post("/:id/retweet", isLoggedIn, catchAsync(async (req, res) => {
         req.flash("error", err.message);
         res.redirect("back");
     }
+}));
+
+// Share Route
+router.post("/:id/copy", catchAsync(async (req, res) => {
+    req.flash("success", "Tweet link copied to clipboard");
+    res.redirect("back")
 }));
 
 module.exports = router;

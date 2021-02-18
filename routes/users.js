@@ -3,14 +3,14 @@ const router = express.Router();
 const catchAsync = require("../utils/catchAsync");
 const passport = require("passport");
 const User = require("../models/user");
-const { isLoggedIn, isUserProfile } = require("../middleware");
+const { isLoggedIn, isLoggedOut, isUserProfile, searching } = require("../middleware");
 
 const multer = require("multer");
 const { storage, cloudinary } = require("../cloudinary");
 const upload = multer({ storage });
 
 //_____ Register form
-router.get("/register", (req, res) => {
+router.get("/register", isLoggedOut, (req, res) => {
     res.render("users/register");
 });
 // Register Logic
@@ -44,7 +44,7 @@ router.post("/register", upload.single("image"), catchAsync(async (req, res, nex
 }));
 
 //______Login form
-router.get("/login", (req, res) => {
+router.get("/login", isLoggedOut, (req, res) => {
     res.render("users/login");
 });
 // Login Logic
@@ -56,17 +56,18 @@ router.post("/login", passport.authenticate("local", { failureFlash: true, failu
 });
 
 //_____Logout logic
-router.get("/logout", isLoggedIn, (req, res) => {
+router.get("/logout", (req, res) => {
     req.logout();
     req.flash("success", "Come back Soon");
-    res.redirect("/twitter/home");
+    res.redirect("/login");
 });
 
 // Profile user page
-router.get("/:userId", isLoggedIn, catchAsync(async (req, res) => {
+router.get("/users/:username", isLoggedIn, searching, catchAsync(async (req, res) => {
     try {
-        const user = await User.findById(req.params.userId).populate({
-            path: "tweets",
+        const { username } = req.params;
+        const user = await User.findOne({ username: username }).populate({
+            path: "tweets followers following",
             populate: {
                 path: "author parent retweetStatus retweets",
                 populate: {
@@ -75,8 +76,11 @@ router.get("/:userId", isLoggedIn, catchAsync(async (req, res) => {
                 }
             }
         });
-        const tweets = user.tweets;
-        res.render("users/profile", { user, tweets });
+        if (!user) {
+            req.flash("error", "Couldnt find user, try again.");
+            return res.redirect("/twitter/home");
+        }
+        res.render("users/profile", { user, tweets: user.tweets });
     } catch (err) {
         req.flash("error", err.message);
         res.redirect("/twitter/home");
@@ -84,9 +88,8 @@ router.get("/:userId", isLoggedIn, catchAsync(async (req, res) => {
 }));
 
 // Update profile user page
-router.put("/:userId", isLoggedIn, isUserProfile, upload.single("image"),catchAsync(async (req, res) => {
-    const { userId } = req.params;
-    const userUpdated = await User.findByIdAndUpdate(userId, req.body.user);
+router.put("/users/:username", isLoggedIn, isUserProfile, upload.single("image"), catchAsync(async (req, res) => {
+    const userUpdated = await User.findOneAndUpdate({ username :  req.params.username}, req.body.user);
     if (req.file) {
         cloudinary.uploader.destroy(userUpdated.image.filename); //Deleting actual picture from cloudinary
         const { path, filename } = req.file;
@@ -94,7 +97,7 @@ router.put("/:userId", isLoggedIn, isUserProfile, upload.single("image"),catchAs
     }
     await userUpdated.save();
     req.flash("success", "Updated profile.");
-    res.redirect(`/${userUpdated.id}`);
+    res.redirect(`/users/${userUpdated.username}`);
 }));
 
 // Following user logic
@@ -122,12 +125,12 @@ router.get("/follow/:userId", isLoggedIn, catchAsync(async (req, res) => {
         }
         user.save();
         currentUser.save()
-        res.redirect(`/${user._id}`)
+        res.redirect("back")
     } catch (err) {
         req.flash("error", err.message);
         res.redirect("back")
     }
 }));
-    
+
 module.exports = router;
 

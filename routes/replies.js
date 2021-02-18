@@ -4,7 +4,7 @@ const catchAsync = require("../utils/catchAsync");
 const Tweet = require("../models/tweet");
 const User = require("../models/user");
 const {addTimeline} = require("../public/js/utils")
-const { isLoggedIn, validateTweet, isReplyAuthor } = require("../middleware");
+const { isLoggedIn, validateTweet } = require("../middleware");
 
 //Multer is a middleware that divides our req.body and req.files => [{info pic1},{info pic2},{}...]
 const multer = require("multer"); 

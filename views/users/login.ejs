@@ -1,10 +1,10 @@
 <% layout("layouts/boilerplate") %>
 <div class="container">
     <div class="row">
-        <div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4">
+        <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2 col-xl-6 offset-xl-3">
             <div class="card shadow rounded">
                 <div class="card-body">
-                    <h1 class="text-center">Login</h1>
+                    <h1 class="text-center mb-4">Login</h1>
                     <form action="/login" method="POST" class="validated-form" novalidate>
                         <div class="mb-3">
                             <label class="form-label" for="username">Username</label>
@@ -16,8 +16,9 @@
                             <input class="form-control" type="password" name="password" id="password" placeholder="password" required>
                             <div class="valid-feedback">Looks Good!</div>
                         </div>
-                        <button class="btn w-100 btn-primary" type="submit">Register</button>
+                        <button class="btn w-100 btn-primary" type="submit">Login</button>
                     </form>
+                    <p class="mt-3 text-center"> Don't have an account? <a href="/register">Sign up.</a></p>
                 </div>
             </div>
         </div>

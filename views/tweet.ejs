@@ -1,81 +1,75 @@
 <% layout("layouts/boilerplate") %>
+<% if (tweet.retweetStatus) { %>
+    <% retweetedBy = tweet.author;
+    tweet = tweet.retweetStatus %>
+<% } else { retweetedBy = null }%>  
 <div class="row">
-    <div class="col-md-4"></div>
-    <div class="col-md-8 col-lg-6">
-        <div class="card">
-            <div class="card-header">
-                <a class="my-auto" href="/twitter/home"><i class="fas fa-arrow-left mx-3"></i></a>
-                Twittear
+    <div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+        <!-- Display Tweet Start-->
+        <div class="card rounded-0">
+            <div class="card-header bg-white">
+                <a class="my-auto" onclick="window.history.go(-1)"><i class="fas fa-arrow-left mx-3"></i></a>
+                <span class="fw-bold fs-5">Tweet</span>
             </div>
             <div class="row mt-2">
-                <% if(retweetedBy) { %>
-                <div class="ms-5 mb-2"><i class="fas fa-retweet"></i> Retweeted by <%= retweetedBy.username %> </div>
-                <% } %> 
-                <div class="col-10 offset-1 d-flex">
-                    <img class="rounded-circle text-center p-0 m-1" src="<%= tweet.author.image.url %>" width="60 px"
-                        height="60 px">
-                    <div class="my-auto ms-3">
-                        <h5 class="card-title m-0"><a href="/<%= tweet.author._id %>" class="text-decoration-none text-dark"><b><%= tweet.author.name %></b></a></h5>
-                        <span>@<%= tweet.author.username %></span>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
                 <div class="col-10 offset-1">
-                    <!--  Display replying to - if tweet has a parent %>  -->
+                    <div class="d-flex mb-1">
+                        <img class="rounded-circle" width="60px" height="60px"  src="<%= tweet.author.image.url %>">
+                        <div class="my-auto ms-3">
+                        <h5 class="m-0 text-capitalize fw-bold"><a href="/users/<%= tweet.author.username %>" class="text-decoration-none text-dark"><b><%= tweet.author.name %></b></a></h5>
+                        <span class="text-muted ">@<%= tweet.author.username %></span>
+                        </div>
+                    </div>
+                    <!--  Display - replying to - if tweet has a parent  -->
                     <% if(tweet.parent) { %>  
-                    <p>Replying to<a href="/<%= tweet.parent.author._id %>">@<%= tweet.parent.author.username %></a></p>
+                    <p class="text-muted fs-6 m-0">Replying to <a class="text-primary text-decoration-none" href="/<%= tweet.parent.author.username %>">@<%= tweet.parent.author.username %></a></p>
                     <% } %> 
-                    <p class="card-text"> <%= tweet.text %> </p>
+                    <p class="card-text my-3 fs-5"><%= tweet.text %></p>
                     <!-- Displaying Carousel if array images is not empty -->
                     <% if (tweet.images.length) { %> 
-                    <div id="tweetCarousel" class="carousel slide" data-bs-ride="carousel">
-                        <ol class="carousel-indicators">
-                            <% tweet.images.forEach((img, i ) => { %> 
-                            <li data-bs-target="#tweetCarousel" data-bs-slide-to="<%= i %>" class="active"></li>
-                            <% }) %> 
-                        </ol>
+                    <div id="tweetCarousel<%= tweet._id %>" class="carousel slide" data-bs-ride="carousel">
                         <div class="carousel-inner">
                             <% tweet.images.forEach((img, i ) => { %> 
-                            <div class="carousel-item <%= (i === 0) ? "active" : "" %> "> 
-                                <img src="<%= img.url %> " class=" img-fluid img-thumbnail mb-2" alt="...">
+                            <div class="carousel-item mb-2 <%= (i === 0) ? "active" : "" %> "> 
+                                <img src="<%= img.url %> " class=" img-fluid img-carousel">
                             </div>
                             <% }); %> 
                         </div>
                         <!-- Displaying controls ONLY if there's more than one img. -->
                         <% if (tweet.images.length > 1) {  %> 
-                        <a class="carousel-control-prev" href="#tweetCarousel" role="button" data-bs-slide="prev">
+                        <a class="carousel-control-prev" href="#tweetCarousel<%= tweet._id %>" role="button" data-bs-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                             <span class="visually-hidden">Previous</span>
                         </a>
-                        <a class="carousel-control-next" href="#tweetCarousel" role="button" data-bs-slide="next">
+                        <a class="carousel-control-next" href="#tweetCarousel<%= tweet._id %>" role="button" data-bs-slide="next">
                             <span class="carousel-control-next-icon" aria-hidden="true"></span>
                             <span class="visually-hidden">Next</span>
                         </a>
                         <% } %> 
                     </div>
-                    <% } %> 
+                    <% } %>
+                    <!-- Displaying count of retweets/likes/replies -->
                     <ul class="list-group list-group-flush mb-2">
                         <li class="list-group-item text-muted"><%= moment(tweet.date).format("lll")%></li>
                         <li class="list-group-item d-flex">
                             <% if(tweet.replies.length) { %> 
-                            <a class="text-decoration-none text-dark fw-bold me-4" href=""><%= tweet.replies.length %> <span class="text-muted">Replies</span></a>
+                            <p class="text-decoration-none text-dark fw-bold me-4"><%= tweet.replies.length %> <span class="text-muted">Replies</span></p>
                             <% } %>
                             <% if(tweet.retweets.length) { %> 
-                            <a class="text-decoration-none text-dark fw-bold me-4" href=""><%= tweet.retweets.length %><span class="text-muted">Retweets</span></a>
+                            <p class="text-decoration-none text-dark fw-bold me-4"><%= tweet.retweets.length %> <span class="text-muted">Retweets</span></p>
                             <% } %> 
                             <% if(tweet.likes.length) { %> 
-                            <a class="text-decoration-none text-dark fw-bold" href=""><%= tweet.likes.length %> <span class="text-muted">Likes</span></a>
+                            <p class="text-decoration-none text-dark fw-bold"><%= tweet.likes.length %> <span class="text-muted">Likes</span></p>
                             <% } %> 
                         </li>
                     </ul>
                 </div>
             </div>
-            <div class="card-footer">
+            <div class="card-footer bg-white">
                 <div class="d-flex justify-content-evenly">
                     <!-- Button trigger reply modal -->
                     <a class="btn btn-share-reply" type="button" data-bs-toggle="modal"
-                    data-bs-target="#replyModal"><i class="far fa-comment"></i></a>
+                    data-bs-target="#replyModal<% tweet._id %>"><i class="far fa-comment"></i></a>
                     <!-- Retweet Button -->
                     <form action="/tweets/<%= tweet._id %>/retweet" method="POST">
                         <% if(currentUser && tweet.retweets.some(retweet => { return retweet.author.equals(currentUser._id)})) {  %>
@@ -89,11 +83,11 @@
                         <% if(currentUser && tweet.likes.some(like => { return like.equals(currentUser._id)})) {  %>
                         <button class="btn btn-like liked"><i class="fas fa-heart"></i></button>
                         <% } else { %>
-                        <button class="btn btn-like"><i class="fas fa-heart"></i></button>
+                        <button class="btn btn-like"><i class="far fa-heart"></i></button>
                         <% } %>
                     </form>
                     <!-- Share button -->
-                    <button class="btn btn-share-reply"><i class="fas fa-share-alt"></i></button>
+                    <button class="btn btn-share-reply" onclick="copyTweetToClipboard('<%= tweet._id %>')"><i class="fas fa-share-alt"></i></button>
                     <% if(currentUser && tweet.author.equals(currentUser._id)) { %>
                     <!-- Delete button -->
                     <form action="/tweets/<%= tweet._id %>?_method=DELETE" method="POST">
@@ -103,85 +97,83 @@
                 </div>
             </div>
         </div>
-        <!--Reply section-->
-        <!--Display replies by looping through them-->
-        <div class="card mb-3">           
+        <!-- Display Tweet END -->
+        <!--Reply Tweet START-->
+        <% if(tweet.replies.length) { %> 
+        <div class="card mb-3 rounded-0">    
+            <!--Display replies by looping through them-->       
             <% for(let reply of tweet.replies) { %>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-2">
-                        <img class="rounded-circle me-auto p-0 m-1" src="<%= reply.author.image.url %>" width="60 px" height="60 px">
+                    <div class="col-2 text-center">
+                        <img class="rounded-circle" width="60px" height="60px" src="<%= reply.author.image.url %>">
                     </div>
-                    <div class="col-10">
+                    <div class="col-10 ps-0">
                         <div class="my-auto ms-1">
                             <p class="card-title m-0">
-                                <a href="/<%= reply.author._id %>" class="text-decoration-none text-dark"><b><%= reply.author.name %></b></a>
+                                <a href="/users/<%= reply.author.username %>" class="text-decoration-none text-dark text-capitalize"><b><%= reply.author.name %></b></a>
                                 <span class="text-muted m-0">@<%= reply.author.username %> · </span>
                                 <span class="text-muted m-0">
                                     <%= moment(reply.date).fromNow(true) %> -
                                 </span>
                                 <a href="/tweets/<%= reply._id %>" class=" fw-bold ms-2">view</a>
                             </p>
-                            <p class="text-muted fs-6">Replying to <a href="/<%= tweet.author._id %>">@<%= tweet.author.username %></a></p>
+                            <p class="text-muted fs-6">Replying to <a class="text-primary text-decoration-none" href="/users/<%= tweet.author.username %>">@<%= tweet.author.username %></a></p>
                         </div>
-                        <div><p> <%= reply.text %> </p></div>
+                        <p class="card-text"><%= reply.text %></p>
                         <!-- Displaying Carousel if array images is not empty -->
-                        <% if (reply.images.length >= 1) { %> 
-                        <div id="replyCarousel" class="carousel slide" data-bs-ride="carousel">
-                            <ol class="carousel-indicators">
-                                <% reply.images.forEach((img, i ) => { %> 
-                                <li data-bs-target="#replyCarousel" data-bs-slide-to="<%= i %>" class="active"></li>
-                                <% }) %> 
-                            </ol>
+                        <% if (reply.images.length) { %> 
+                        <div id="replyCarousel<%= reply._id %>" class="carousel slide" data-bs-ride="carousel">
                             <div class="carousel-inner">
                                 <% reply.images.forEach((img, i ) => { %> 
-                                <div class="carousel-item <%= (i === 0) ? "active" : "" %> "> 
-                                    <img src="<%= img.url %> " class=" img-fluid img-thumbnail mb-2" alt="...">
+                                <div class="carousel-item mb-2 <%= (i === 0) ? "active" : "" %> "> 
+                                    <img src="<%= img.url %> " class=" img-fluid img-carousel">
                                 </div>
                                 <% }); %> 
                             </div>
                             <!-- Displaying controls ONLY if there's more than one img. -->
                             <% if (reply.images.length > 1) {  %> 
-                            <a class="carousel-control-prev" href="#replyCarousel" role="button" data-bs-slide="prev">
+                            <a class="carousel-control-prev" href="#replyCarousel<%= reply._id %>" role="button" data-bs-slide="prev">
                                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                 <span class="visually-hidden">Previous</span>
                             </a>
-                            <a class="carousel-control-next" href="#replyCarousel" role="button" data-bs-slide="next">
+                            <a class="carousel-control-next" href="#replyCarousel<%= reply._id %>" role="button" data-bs-slide="next">
                                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                 <span class="visually-hidden">Next</span>
                             </a>
                             <% } %> 
                         </div>
                         <% } %>
+                        <!-- Display footer buttons of Reply -->
                         <div class="d-flex justify-content-between">
                             <!-- Button trigger reply on reply modal -->
                             <a class="btn btn-share-reply" type="button" data-bs-toggle="modal"
-                            data-bs-target="#replyOnReplyModal">
+                            data-bs-target="#replyOnReplyModal<%= reply._id %>">
                             <i class="far fa-comment"></i>
-                            <%= (reply.replies.length) ? reply.replies.length : "" %>
+                            <%= countButton(reply.replies)%> 
                             </a>
                             <!-- Retweet Button -->
                             <form action="/tweets/<%= reply._id %>/retweet" method="POST">
                                 <% if(currentUser && reply.retweets.some(retweet => { return retweet.author.equals(currentUser._id)})) {  %>
-                                <button class="btn btn-retweet retweeted"><i class="fas fa-retweet"></i></button>
+                                <button class="btn btn-retweet retweeted"><i class="fas fa-retweet"></i><%= countButton(reply.retweets)%> </button>
                                 <% } else { %>
-                                <button class="btn btn-retweet"><i class="fas fa-retweet"></i></button>
+                                <button class="btn btn-retweet"><i class="fas fa-retweet"></i><%= countButton(reply.retweets)%></button>
                                 <% } %>
                             </form>
-                            <!-- Like Button -->
+                            <!-- Like Buttons -->
                             <form action="/tweets/<%= reply._id %>/like" method="POST">
                                 <% if(currentUser && reply.likes.some(like => { return like.equals(currentUser._id)})) { %>
                                 <button class="btn btn-like liked"><i class="fas fa-heart"></i>
-                                    <%= (reply.likes.length) ? reply.replies.length : "" %>
+                                    <%= countButton(reply.likes)%>
                                 </button>
                                 <% } else { %>
-                                <button class="btn btn-like"><i class="fas fa-heart"></i>
-                                    <%= (reply.likes.length) ? reply.replies.length : "" %>
+                                <button class="btn btn-like"><i class="far fa-heart"></i>
+                                    <%= countButton(reply.likes)%>
                                 </button>
                                 <% } %> 
                             </form>
                             <!-- Share Button -->
-                            <button class="btn btn-share-reply"><i class="fas fa-share-alt"></i></button>
+                            <button class="btn btn-share-reply" onclick="copyTweetToClipboard('<%= reply._id %>')"><i class="fas fa-share-alt"></i></button>
                             <% if(currentUser && reply.author.equals(currentUser._id)) { %>
                             <!-- Delete reply button-->
                             <form action="/tweets/<%=reply._id %>?_method=DELETE" method="POST">
@@ -193,8 +185,8 @@
                 </div>
             </div>
             <hr class="my-0">
-            <!-- Reply on reply Modal -->
-            <div class="modal fade" id="replyOnReplyModal" tabindex="-1" aria-labelledby="replyOnReplyModal" aria-hidden="true">
+            <!-- Reply on reply Modal START-->
+            <div class="modal fade" id="replyOnReplyModal<%= reply._id %>" tabindex="-1" aria-labelledby="replyOnReplyModal" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <% if(currentUser) { %> 
@@ -204,56 +196,56 @@
                         <div class="modal-body">
                             <div class="row">
                                 <div class="col-2">
-                                    <img class="img-fluid rounded-circle mb-4" src="<%= reply.author.image.url %>" alt="">
-                                    <img class="img-fluid rounded-circle" src="<%= currentUser.image.url %>" alt="">
+                                    <img class="rounded-circle" width="60px" height="60px" src="<%= reply.author.image.url %>">
                                 </div>
                                 <div class="col-10">
                                     <div>
                                         <p class="card-title m-0">
-                                            <b> <%= reply.author.name %></b>
+                                            <b class="text-capitalize"> <%= reply.author.name %></b>
                                             <span class="text-muted m-0">@<%= reply.author.name %> · </span>
                                             <span class="text-muted m-0">
                                                 <%= moment(tweet.date).fromNow(true)%>
                                             </span>
                                         </p>
                                         <p class="my-2"><%= reply.text %> </p>
-                                        <p class="text-muted fs-6">Replying to <a href="/<%= reply.author._id %>">@<%= reply.author.username %></a></p>
+                                        <p class="text-muted fs-6">Replying to <a href="/users/<%= reply.author.username %>">@<%= reply.author.username %></a></p>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-2">
+                                    <img class="rounded-circle" width="60px" height="60px" src="<%= currentUser.image.url %>">
+                                </div>
+                                <div class="col-10">
                                     <form action="/tweets/<%= reply._id%>" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
                                         <div class="mb-3">
-                                            <textarea class="form-control" name="tweet[text]" id="text" cols="30" rows="4" placeholder="Tweet your reply" required autofocus></textarea>
+                                            <textarea class="form-control" name="tweet[text]" id="text" cols="30" rows="4" placeholder="Tweet your reply" autofocus maxlength="260" required ></textarea>
                                             <div class="valid-feedback">Looks good!</div>
                                         </div>
                                         <div class="mb-3">
                                             <input class="form-control" type="file" id="image" name="image" multiple>
                                         </div>
-                                        <div class="modal-footer">
-                                            <button type="submit" class="btn btn-sm btn-primary ms-auto rounded-pill">Reply</button>
+                                        <div class="modal-footer pb-0">
+                                            <button type="submit" class="btn btn-primary ms-auto px-3">Reply</button>
                                         </div>
                                     </form>
                                 </div>
                             </div>
                         </div>
-                        <% } else { %>
-                            <div class="modal-header p-2 bg-dark bg-gradient">
-                                <button type="button" class="btn-close m-0 btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body bg-dark text-warning">
-                                <p class="font-monospace">You need to <a href="/login" class="text-warning fw-bold">login</a>  first. If you dont have an account register <a href="/register" class="text-warning fw-bold">here.</a></p> 
-                            </div>
-                        <% } %>  
+                        <% }%>
                     </div>
                 </div>
             </div>
+            <!-- Reply on reply modal END -->
             <% } %> 
         </div>
-        <!-- reply section END -->
+        <% } %> 
+        <!--Reply Tweet END-->
     </div>
-    <div class="col-lg-2"></div>
 </div>
 
-<!-- Reply Modal -->
-<div class="modal fade" id="replyModal" tabindex="-1" aria-labelledby="replyModalLabel" aria-hidden="true">
+<!-- Reply Tweet Modal -->
+<div class="modal fade" id="replyModal<% tweet._id %>" tabindex="-1" aria-labelledby="replyModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <% if(currentUser) { %> 
@@ -263,42 +255,41 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-2">
-                        <img class="img-fluid rounded-circle mb-4" src="<%= tweet.author.image.url %>" alt="">
-                        <img class="img-fluid rounded-circle mt-1" src="<%= currentUser.image.url %>" alt="">
+                        <img class="rounded-circle" width="60px" height="60px" src="<%= tweet.author.image.url %>">
                     </div>
                     <div class="col-10">
                         <div>
                             <p class="card-title m-0">
-                                <b> <%= tweet.author.name %></b>
+                                <b class="text-capitalize"> <%= tweet.author.name %></b>
                                 <span class="text-muted m-0">@<%= tweet.author.name %> · </span>
                                 <span class="text-muted m-0">
                                     <%= moment(tweet.date).fromNow(true)%>
                                 </span>
                             </p>
                             <p class="my-2"><%= tweet.text %> </p>
-                            <p class="text-muted fs-6">Replying to <a href="/<%= tweet.author._id %>">@<%= tweet.author.username %></a></p>
+                            <p class="text-muted fs-6">Replying to <a href="/users/<%= tweet.author.username %>">@<%= tweet.author.username %></a></p>
                         </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-2">
+                        <img class="rounded-circle" width="60px" height="60px" src="<%= currentUser.image.url %>">
+                    </div>
+                    <div class="col-10">
                         <form action="/tweets/<%= tweet._id%>" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
                             <div class="mb-3">
-                                <textarea class="form-control" name="tweet[text]" id="text" cols="30" rows="4" placeholder="Tweet your reply" required autofocus></textarea>
+                                <textarea class="form-control" name="tweet[text]" id="text" cols="30" rows="4" placeholder="Tweet your reply" autofocus maxlength="260" required ></textarea>
                                 <div class="valid-feedback">Looks good!</div>
                             </div>
                             <div class="mb-3">
                                 <input class="form-control" type="file" id="image" name="image" multiple>
                             </div>
                             <div class="modal-footer">
-                                <button type="submit" class="btn btn-sm btn-primary ms-auto rounded-pill">Reply</button>
+                                <button type="submit" class="btn btn-primary ms-auto px-3">Reply</button>
                             </div>
                         </form>
                     </div>
                 </div>
-            </div>
-            <% } else { %>
-            <div class="modal-header p-2 bg-dark bg-gradient">
-                <button type="button" class="btn-close m-0 btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body bg-dark text-warning">
-                <p class="font-monospace">You need to <a href="/login" class="text-warning fw-bold">login</a>  first. If you dont have an account register <a href="/register" class="text-warning fw-bold">here.</a></p> 
             </div>
             <% } %>  
         </div>

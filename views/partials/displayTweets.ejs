@@ -6,16 +6,16 @@
     <% } else { retweetedBy = null } %>
 <div class="card-body">
     <div class="row">
-        <div class="col-2">
-            <img class="rounded-circle me-auto p-0 m-1" src="<%= tweet.author.image.url %>" width="60 px" height="60 px">
+        <div class="col-2 text-center pe-0">
+            <img class="img-user" src="<%= tweet.author.image.url %>">
         </div>
         <div class="col-10">
             <% if(retweetedBy) { %>
-            <div class="ms-1 mb-2 fw-bold"><i class="fas fa-retweet"></i><%= retweetedBy.name %> retweeted </div>
+            <div class="ms-1 retweetedBy"><i class="fas fa-retweet"></i><%= retweetedBy.name %> retweeted </div>
             <% } %> 
             <div class="my-auto ms-1 d-flex">
                 <p class="card-title m-0">
-                    <a href="/<%=tweet.author._id %>" class="text-decoration-none text-dark"><b><%= tweet.author.name %></b></a>
+                    <a href="/users/<%=tweet.author.username %>" class="text-decoration-none text-dark text-capitalize"><b><%= tweet.author.name %></b></a>
                     <span class="text-muted m-0">@<%= tweet.author.username %> · </span>
                     <span class="text-muted m-0">
                         <%= moment(tweet.date).fromNow(true) %> -
@@ -26,32 +26,27 @@
             <div>
                 <!-- Displaying replying to in post with parents  -->
                 <% if(tweet.parent) { %> 
-                <p>Replying to <a href="/<%=tweet.parent.author._id %>">@<%= 
+                <p class="text-muted fs-6 m-0">Replying to <a class="text-primary text-decoration-none" href="/users/<%=tweet.parent.author.username %>">@<%= 
                 tweet.parent.author.username %></a></p>
                 <% } %> 
-                <p> <%= tweet.text %> </p>
+                <p class="card-text my-3 fs-5"> <%= tweet.text %> </p>
             </div>
             <!-- Displaying Carousel if array images is not empty -->
-            <% if (tweet.images.length >= 1) { %> 
-            <div id="tweetCarousel" class="carousel slide" data-bs-ride="carousel">
-                <ol class="carousel-indicators">
-                    <% tweet.images.forEach((img, i ) => { %> 
-                    <li data-bs-target="#tweetCarousel" data-bs-slide-to="<%= i %>" class="active"></li>
-                    <% }) %> 
-                </ol>
+            <% if (tweet.images.length) { %> 
+            <div id="tweetCarousel<%= tweet._id %>" class="carousel slide" data-bs-ride="carousel">
                 <div class="carousel-inner">
                     <% tweet.images.forEach((img, i ) => { %> 
-                    <div class="carousel-item <%= (i === 0) ? "active" : "" %> "> 
-                        <img src="<%= img.url %> " class=" img-fluid img-thumbnail mb-2" alt="...">
+                    <div class="carousel-item mb-3 <%= (i === 0) ? "active" : "" %> "> 
+                        <img src="<%= img.url %> " class="img-carousel img-fluid">
                     </div>
                     <% }); %> 
                 </div>
                 <% if (tweet.images.length > 1) {  %> 
-                <a class="carousel-control-prev" href="#tweetCarousel" role="button" data-bs-slide="prev">
+                <a class="carousel-control-prev" href="#tweetCarousel<%= tweet._id %>" role="button" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                     <span class="visually-hidden">Previous</span>
                 </a>
-                <a class="carousel-control-next" href="#tweetCarousel" role="button" data-bs-slide="next">
+                <a class="carousel-control-next" href="#tweetCarousel<%= tweet._id %>" role="button" data-bs-slide="next">
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                     <span class="visually-hidden">Next</span>
                 </a>
@@ -62,30 +57,32 @@
             <div class="d-flex justify-content-between">
                 <!-- reply button modal -->
                 <button type="button" class="btn btn-share-reply" data-bs-toggle="modal" data-bs-target="#replyModal<%= tweet._id %>"><i class="far fa-comment"></i>
-                <%= (tweet.replies.length) ? tweet.replies.length : "" %> 
+                <%= countButton(tweet.replies)%> 
                 </button>
                 <!-- Retweet button -->
                 <form action="/tweets/<%= tweet._id %>/retweet" method="POST">
                     <% if(currentUser && tweet.retweets.some(retweet => { return retweet.author.equals(currentUser._id)})) {  %>
-                    <button class="btn btn-retweet retweeted"><i class="fas fa-retweet"></i></button>
+                    <button class="btn btn-retweet retweeted"><i class="fas fa-retweet"></i><%= countButton(tweet.retweets) %></button>
                     <% } else { %>
-                    <button class="btn btn-retweet"><i class="fas fa-retweet"></i></button>
+                    <button class="btn btn-retweet"><i class="fas fa-retweet"></i><%= countButton(tweet.retweets) %></button>
                     <% } %>
                 </form>
                 <!-- Like buttons -->
                 <form action="/tweets/<%= tweet._id %>/like" method="POST">
                     <% if(currentUser && tweet.likes.some(like => { return like.equals(currentUser._id)})) { %>
-                    <button class="btn btn-like liked"><i class="fas fa-heart"></i><%= (tweet.likes.length) ? tweet.likes.length : "" %></button>
+                    <button class="btn btn-like liked"><i class="fas fa-heart"></i><%= countButton(tweet.likes) %></button>
                     <% } else { %>
-                    <button class="btn btn-like"><i class="fas fa-heart"></i><%= (tweet.likes.length) ? tweet.likes.length : "" %></button>
+                    <button class="btn btn-like"><i class="fas fa-heart"></i><%= countButton(tweet.likes) %></button>
                     <% } %> 
                 </form>
                 <!-- share button -->
-                <button class="btn btn-share-reply"><i class="fas fa-share-alt"></i></button>
+                <form action="/tweets/<%= tweet._id %>/copy" method="POST">
+                    <button class="btn btn-share-reply" onclick="copyTweet('<%=tweet._id%>')"><i class="fas fa-share-alt"></i></button>
+                </form>
                 <!-- Delete button -->
                 <% if(currentUser && tweet.author.equals(currentUser._id)) { %> 
                 <form action="/tweets/<%=tweet._id%>?_method=DELETE" method="POST">
-                    <button class="btn btn-like liked" type="submit"><i class="fas fa-trash-alt text-danger"></i></button>
+                    <button class="btn btn-like liked" type="submit"><i class="fas fa-trash text-danger"></i></button>
                 </form>
                 <% } %> 
             </div>
@@ -104,34 +101,38 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-2">
-                        <!-- PP USER OF POST -->
-                        <img class="img-fluid rounded-circle mb-4" src="<%= tweet.author.image.url %>" alt="">
-                        <!-- PROFILE PICTURE OF USER LOGGED -->
-                        <img class="img-fluid rounded-circle mt-1" src="<%= currentUser.image.url %>" alt="">
+                        <img class="img-user" src="<%= tweet.author.image.url %>" >
                     </div>
                     <div class="col-10">
                         <div>
                             <p class="card-title m-0">
-                                <b> <%= tweet.author.name %></b>
+                                <b class="text-capitalize"> <%= tweet.author.name %></b>
                                 <span class="text-muted m-0">@<%= tweet.author.username %> · </span>
                                 <span class="text-muted m-0">
                                     <%= moment(tweet.date).fromNow(true)%>
                                 </span>
                             </p>
                             <p class="my-2"><%= tweet.text %> </p>
-                            <p class="text-muted fs-6">Replying to <a href="/<%= tweet.author._id %>">@<%= tweet.author.username %></a></p>
+                            <p class="text-muted fs-6">Replying to <a href="/users/<%= tweet.author.username %>">@<%= tweet.author.username %></a></p>
                         </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-2">
+                        <img class="img-user" src="<%= currentUser.image.url %>">
+                    </div>
+                    <div class="col-10">
                         <!-- FORM TO REPLY -->
                         <form action="/tweets/<%= tweet._id%>" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
                             <div class="mb-3">
-                                <textarea class="form-control" name="tweet[text]" id="text" cols="30" rows="4" placeholder="Tweet your reply" required autofocus></textarea>
+                                <textarea class="form-control" name="tweet[text]" id="text" cols="30" rows="4" placeholder="Tweet your reply" autofocus maxlength="260" required ></textarea>
                                 <div class="valid-feedback">Looks good!</div>
                             </div>
                             <div class="mb-3">
                                 <input class="form-control" type="file" id="image" name="image" multiple>
                             </div>
-                            <div class="modal-footer">
-                                <button type="submit" class="btn btn-sm btn-primary ms-auto rounded-pill">Reply</button>
+                            <div class="modal-footer pb-0">
+                                <button type="submit" class="btn btn-primary ms-auto px-3">Reply</button>
                             </div>
                         </form>
                     </div>
@@ -141,4 +142,4 @@
         </div>
     </div>
 </div>
-<% } %> 
+<% } %>

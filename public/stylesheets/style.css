@@ -1,10 +1,37 @@
-.navbar {
-    background-color: #f0efeb;
+/* Styles of landing Page */
+.first-home .second-home {
+    height: 50%;
 }
 
-.bgHome {
-    background: rgb(168,218,220);
-    background: linear-gradient(90deg, rgba(168,218,220,0.6409090909090909) 0%, rgba(223,243,242,0.9227272727272727) 0%, rgba(224,243,242,1) 0%, rgba(192,245,243,1) 0%, rgba(192,245,243,1) 0%, rgba(192,245,243,1) 27%, rgba(192,245,243,1) 51%, rgba(192,245,243,1) 68%, rgba(192,245,243,1) 96%);
+#img-home {
+    width: 100%;
+    height: 100%;
+}
+
+@media(min-width: 992px) {
+    #img-home {
+        width: 100%;
+        height: 100vh;
+    }
+    .second-home {
+        height: 100vh;
+        display: flex;
+    }
+}
+
+/* Styles Page */
+.items {
+    padding: .5rem 1rem;
+    display: block;
+    color: #0d6efd ;
+    text-decoration: none;
+    position: relative;
+    top: 0;
+    transition: top ease 0.5s;
+}
+
+.items:hover {
+    top: -5px;
 }
 
 #img-profile {
@@ -12,11 +39,37 @@
     height: 100%;
 }
 
+.img-user {
+    border-radius: 50%;
+    max-width: 100%;
+    height: auto;
+}
+
+@media(min-width: 892px) {
+    .img-user {
+        border-radius: 50%;
+        max-width: 80px;
+        height: 80px;
+    }
+}
+
+.img-carousel {
+    border-radius: 5%;
+}
+
+.retweetedBy {
+    color: rgb(91, 112, 131);
+    font-weight: 700;
+    text-transform: capitalize;
+    font-size: 15px;
+}
+
 .btn-share-reply, .btn-retweet, .btn-like {
     border: 0;
     border-width: 0;
     color: #6c757d;
     border-radius: 50%;
+    font-size: 18px;
 }
 
 .btn-share-reply:hover, .btn-share-reply:focus, .btn-like:hover, .btn-like:focus, .btn-retweet:hover, .btn-retweet:focus {

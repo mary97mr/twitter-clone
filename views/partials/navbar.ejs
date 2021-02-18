@@ -1,52 +1,63 @@
-<nav class="navbar sticky-top navbar-expand-lg navbar-light mb-4">
-    <div class="container-fluid text-dark">
-        <a class="navbar-brand" href="/"><i class="fab fa-twitter"></i></a>
+<nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light mb-4 border-bottom">
+    <div class="container-fluid">
+        <a class="navbar-brand text-primary" href="/"><i class="fab fa-twitter"></i></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
             aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav m-auto">
-                <a class="nav-link ps-5 align-baseline" href="/twitter/home"><i class="fas fa-home me-1"></i>Home</a>
-                <!-- Button trigger twitter modal -->
-                <a class="nav-link ps-5" type="button" data-bs-toggle="modal" data-bs-target="#tweetModal"><i class="fas fa-pen me-1"></i>Twittear</a>
+                <a class="items ps-5 align-baseline" href="/twitter/home"><i class="fas fa-home me-1"></i>Home</a>
                 <% if(!currentUser) { %>
-                    <a class="nav-link ps-5" href="/register"><i class="fas fa-user-plus me-1"></i> Register</a>
-                    <a class="nav-link ps-5" href="/login"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
+                <a class="items ps-5" href="/register"><i class="fas fa-user-plus me-1"></i> Register</a>
+                <a class="items ps-5" href="/login"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
                 <% } else { %>
-                    <a class="nav-link ps-5" href="/<%= currentUser._id %> "><i class="fas fa-user me-1"></i> Profile</a>                 
-                    <a class="nav-link ps-5" href="/logout"> <i class="fas fa-sign-out-alt me-1"></i>Logout</a>
+                <!-- Button trigger twitter modal -->
+                <a class="items ps-5" type="button" data-bs-toggle="modal" data-bs-target="#tweetModal"><i class="fas fa-pen me-1"></i>Twittear</a>
+                <a class="items ps-5" href="/users/<%= currentUser.username %>"><i class="fas fa-user me-1"></i> Profile</a>                 
+                <a class="items ps-5" href="/logout"> <i class="fas fa-sign-out-alt me-1"></i>Logout</a>
+                <form action="" class="d-flex ps-5" method="GET" >
+                    <div class="input-group">
+                        <span class="input-group-text bg-primary text-white border-primary" id="basic-addon1">@</span>
+                        <input class="form-control me-2 border-primary" type="text" placeholder="username" name="search">
+                    </div>
+                    <button class="btn btn-outline-primary" type="submit">Search</button>
+                </form>
                 <% } %> 
             </div>
         </div>
     </div>
 </nav>
 
-<!-- Twitter Modal -->
+<!-- Create a Tweet Modal -->
 <div class="modal fade" id="tweetModal" tabindex="-1" aria-labelledby="tweetModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <% if(currentUser) { %> 
-            <div class="modal-header">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header p-2">
+                <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="/tweets" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
-                    <div class="mb-3">
-                        <label class="form-label" for="text">Share what's in your mind</label>
-                        <textarea class="form-control" name="tweet[text]" id="text" cols="30" rows="4"
-                            placeholder="What's happening?" required></textarea>
-                        <div class="valid-feedback">Looks good!</div>
+                <div class="row">
+                    <div class="col-2">
+                        <img class="img-fluid rounded-circle mt-1" src="<%= currentUser.image.url %>">
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label" for="image">Add an image to your tweet</label>
-                        <input class="form-control" type="file" id="image" name="image" multiple>
+                    <div class="col-10">
+                        <form action="/tweets" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <textarea class="form-control" name="tweet[text]" cols="30" rows="4"
+                                    placeholder="What's happening?" autofocus maxlength="260" required ></textarea>
+                                <div class="valid-feedback">Looks good!</div>
+                            </div>
+                            <div class="mb-3">
+                                <input class="form-control" type="file" name="image" multiple>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-outline-primary ms-auto px-3">tweet</button>
+                            </div>
+                        </form>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger btn-sm" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-sm btn-outline-primary ms-auto rounded-pill">tweet</button>
-                    </div>
-                </form>
+                </div>
             </div>
             <% } else { %>
             <div class="modal-header p-2 bg-dark bg-gradient">
