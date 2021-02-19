@@ -29,6 +29,15 @@ router.post("/register", upload.single("image"), catchAsync(async (req, res, nex
             }
         }
         const createdUser = await User.register(user, password);
+        // Following all the users by default
+        const users = await User.find({ username: { $ne: createdUser.username } });
+        for (let user of users) {
+            user.followers.push(createdUser); 
+            createdUser.following.push(user); 
+            createdUser.timeline.push(...user.tweets);
+            await user.save();
+        }
+        await createdUser.save();
         // After registering a user, user already login.
         req.login(createdUser, err => {
             if (err) return next(err)
