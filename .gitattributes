@@ -1,0 +1,4 @@
+app.js merge=ours
+package-lock.json merge=ours
+package.json merge=ours
+public/js/copyTweets.js merge=ours
