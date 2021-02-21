@@ -26,7 +26,10 @@ const userSchema = new Schema({
     followers: [{ type: Schema.Types.ObjectId, ref: "User" }],
     following: [{ type: Schema.Types.ObjectId, ref: "User" }],
     tweets: [{ type: Schema.Types.ObjectId, ref: "Tweet"}],
-    timeline: [{ type: Schema.Types.ObjectId, ref: "Tweet"}]
+    timeline: [{ type: Schema.Types.ObjectId, ref: "Tweet" }],
+    resetPasswordToken: String,
+    resetPasswordExpires: Date
+    
 });
 
 userSchema.plugin(passportLocalMongoose);
